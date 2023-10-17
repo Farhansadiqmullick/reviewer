@@ -1,0 +1,4 @@
+*.zip
+/node-modules
+composer.json
+package.json
