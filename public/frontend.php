@@ -26,15 +26,15 @@ function modal_form()
                     <div class="row form-group">
                     <label for="inputName">Name</label>
                         <div class="col">
-                            <input type="text" name="firstName" class="form-control" placeholder="First name">
+                            <input type="text" name="firstName" class="form-control" placeholder="First name" required>
                         </div>
                         <div class="col">
-                            <input type="text" name="lastName" class="form-control" placeholder="Last name">
+                            <input type="text" name="lastName" class="form-control" placeholder="Last name" required>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="inputEmail">Email</label>
-                        <input type="email" name="email" class="form-control" id="inputEmail" placeholder="Email">
+                        <input type="email" name="email" class="form-control" id="inputEmail" placeholder="Email" required>
                     </div> 
                     <div class="form-group">
                         <label for="inputPhone">Phone</label>
@@ -50,25 +50,25 @@ function modal_form()
                     <div class="form-group">
                         <label>Participation Categories:</label><br>
                         <label class="radio-inline">
-                            <input type="radio" name="category" value="Statement Piece"> Statement Piece
+                            <input type="radio" name="category" value="Statement Piece" required> Statement Piece
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="category" value="Convertible Jewelry"> Convertible Jewelry
+                            <input type="radio" name="category" value="Convertible Jewelry" required> Convertible Jewelry
                         </label>                        
                         <label class="radio-inline">
-                            <input type="radio" name="category" value="Perfume Bottle or Jewelry Box"> Perfume Bottle or Jewelry Box
+                            <input type="radio" name="category" value="Perfume Bottle or Jewelry Box" required> Perfume Bottle or Jewelry Box
                         </label>
                     </div>                    
                     <div class="form-group">
                         <slabel>Participation Segments:</slabel><br>
                         <label class="radio-inline">
-                            <input type="radio" name="segment" value="Sketch"> Sketch
+                            <input type="radio" name="segment" value="Sketch" required> Sketch
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="segment" value="CAD"> CAD
+                            <input type="radio" name="segment" value="CAD" required> CAD
                         </label>                        
                         <label class="radio-inline">
-                            <input type="radio" name="segment" value="iPad"> iPad
+                            <input type="radio" name="segment" value="iPad" required> iPad
                         </label>
                     </div>
                     <div class="form-group">
@@ -77,7 +77,7 @@ function modal_form()
                     </div>
                     <div class="form-group">
                         <label for="document">Upload:</label><br />
-                        <input type="file" class="form-control-file" id="document" name="document" accept=".png,.svg,.jpeg,.jpg,.pdf,.docx">
+                        <input type="file" class="form-control-file" id="document" name="document" accept=".png,.svg,.jpeg,.jpg,.pdf,.docx" required>
                     </div></br>
                     <div class="text-center mx-auto">
                     <button class="btn btn-primary" type="submit">Submit Renewal</button>

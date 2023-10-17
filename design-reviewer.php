@@ -26,11 +26,9 @@ class DES_REVIEW
         add_action('plugins_loaded', array($this, 'review_plugins_loaded'));
         add_action('admin_enqueue_scripts', array($this, 'load_assets'));
         add_action('wp_enqueue_scripts', array($this, 'load_assets'));
+        // add_action('admin_init', array($this, 'redirect_review_after_activation'));
         add_filter('admin_menu', array($this, 'review_menu'));
         register_activation_hook(__FILE__, array($this, 'review_database_init'));
-        add_action('admin_head', array($this, 'on_admin_page_load'));
-        add_filter('upload_dir', array($this, 'document_upload_dir'));
-        remove_filter('upload_dir', array($this, 'document_upload_dir'));
         add_filter("plugin_action_links_$plugin_basename", [$this, 'add_settings_link']);
     }
 
@@ -41,14 +39,21 @@ class DES_REVIEW
         $this->include_files('inc/data.php');
         $this->include_files('helpers.php');
         $this->include_files('public/frontend.php');
+        $this->include_files('inc/functions.php');
     }
 
-    public function load_assets()
+    public function load_assets($hooks)
     {
+        wp_enqueue_style('google-nunito-min', 'https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i', null, '');
         wp_enqueue_style('bootstrap-min', '//getbootstrap.com/docs/5.3/dist/css/bootstrap.min.css', null, '');
-        wp_enqueue_style('review-style', plugin_dir_url(__FILE__) . 'assets/css/style.css', null, rand(111, 999), 'all');
 
-
+        if ('toplevel_page_review' == $hooks) {
+            wp_enqueue_style('font-awersome-min', plugin_dir_url(__FILE__) . 'assets/css/all.min.css', null, '', 'all');
+            wp_enqueue_style('datatables-bootstrap-min', plugin_dir_url(__FILE__) . 'assets/css/dataTables-bootstrap.min.css', null, '', 'all');
+            wp_enqueue_style('sb-admin', plugin_dir_url(__FILE__) . 'assets/css/sb-admin.css', null, '', 'all');
+            wp_enqueue_style('custom', plugin_dir_url(__FILE__) . 'assets/css/custom.css', null, '', 'all');
+            wp_enqueue_style('review-style', plugin_dir_url(__FILE__) . 'assets/css/style.css', null, rand(111, 999), 'all');
+        }
         wp_enqueue_script('jquery-slim', '//code.jquery.com/jquery-3.3.1.slim.min.js');
         wp_enqueue_script('popper-bootstrap', '//cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js', ['jquery'], '', true);
         wp_enqueue_script('bootstrap-min', '//cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js', ['jquery'], '', true);
@@ -77,34 +82,13 @@ category varchar(60) NOT NULL DEFAULT '',
 segment varchar(60) NOT NULL DEFAULT '',
 description varchar(256) NOT NULL DEFAULT '',
 file varchar(120) NOT NULL DEFAULT '',
+jury1 varchar(60) NOT NULL DEFAULT '',
+jury2 varchar(60) NOT NULL DEFAULT '',
+jury3 varchar(60) NOT NULL DEFAULT '',
+jury4 varchar(60) NOT NULL DEFAULT '',
+jury5 varchar(60) NOT NULL DEFAULT '',
 PRIMARY KEY (id)
 ) $this->charset;");
-    }
-
-    function on_admin_page_load()
-    {
-
-        global $wpdb;
-        if (isset($data) && is_array($data) && !empty($data)) {
-            $row = $data;
-            $columns = implode(", ", array_keys($row));
-            $placeholders = implode(", ", array_fill(0, count($row), "%s"));
-
-            $query = $wpdb->prepare("INSERT INTO $this->tablename ($columns) VALUES ($placeholders)", array_values($row));
-            $wpdb->query($query);
-        }
-    }
-
-    function document_upload_dir($default_dir_data)
-    {
-        return array(
-            'path'   => plugin_dir_path(__FILE__) . 'images',
-            'url'    => plugin_dir_url(__FILE__) . 'images',
-            'subdir' => '',
-            'basedir' => plugin_dir_path(__FILE__),
-            'baseurl' => plugin_dir_url(__FILE__),
-            'error'  => false,
-        );
     }
 
 
@@ -137,15 +121,24 @@ PRIMARY KEY (id)
     public function review_menu()
     {
         add_menu_page('Design Review', 'Design Review', 'manage_options', 'review', [$this, 'review_options'], plugins_url('images/design.svg', __FILE__));
+        add_submenu_page('review', 'Jury Worksheet', 'Jury Worksheet', 'jury_access', 'jury-worksheet', [$this, 'jury_worksheet_options']);
+
     }
 
     public function review_options()
     {
         echo '<h3>Design Reviewer</h3>';
+        $current_user = wp_get_current_user();
+        if (in_array('jury', $current_user->roles)) {
+            wp_safe_redirect(admin_url('admin.php?page=jury-worksheet'));
+            exit;
+        }
+        $this->include_files('inc/admin-dashboard.php');
+    }
 
-        // echo '<pre>';
-        // var_dump($data->review_get_data());
-        // echo '</pre>';
+    public function jury_worksheet_options()
+    {
+        echo '<h3>Jury WorkSheet Page</h3>';
     }
 }
 
