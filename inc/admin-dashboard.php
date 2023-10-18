@@ -1,3 +1,64 @@
+<?php
+global $wpdb;
+$tablename = $wpdb->prefix . 'review';
+$results = $wpdb->get_results("SELECT `category` FROM {$tablename} ORDER BY id DESC", ARRAY_A);
+$categories = [];
+$category_count = '';
+if ($results) {
+    foreach ($results as $category) {
+        $categories[] = $category['category'];
+    }
+
+    function get_categories_count($category_name)
+    {
+        global $wpdb;
+        $tablename = $wpdb->prefix . 'review';
+        $count = 0;
+        if ($category_name) {
+            $count = $wpdb->get_var($wpdb->prepare("SELECT count(*) FROM {$tablename} WHERE category = %s", $category_name));
+        }
+        return $count;
+    }
+} else {
+    echo 'No Category Found';
+}
+
+function categories_cell($all_category, $key)
+{
+    $all_category = array_values(array_unique($all_category));
+    // Check if the key exists in the array
+    if (isset($all_category[$key])) {
+        $category = $all_category[$key];
+        $count = get_categories_count($category);
+        $url = admin_url('admin.php?page=single-design&category_template=' . urlencode($category));
+        // Create the HTML for the category cell at the specified position
+$cell = <<<HEREDOC
+<div class="col-xl-3 col-md-6 mb-4">
+    <div class="card border-left-primary shadow h-100 py-2">
+        <a href="$url">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-lg font-weight-bold text-uppercase mb-1">$category</div>
+                    </div>
+                    <div class="col-auto">
+                        <h3 class="text-primary">$count</h3>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+HEREDOC;
+        return $cell;
+    } else {
+        // Handle the case where the key does not exist in the array
+        return '';
+    }
+}
+
+
+?>
 <div id="wrapper">
 
     <!-- Content Wrapper -->
@@ -85,10 +146,6 @@
                         </div>
                     </div>
 
-
-
-
-
                     <div class="col-xl-3 col-md-6 mb-4">
                         <div class="card border-left-warning shadow h-100 py-2">
                             <div class="card-body">
@@ -120,23 +177,9 @@
                 </div>
                 <div class="row dashboard-boxes-row">
 
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card border-left-primary shadow h-100 py-2">
-                            <a href="https://www.igi.org/expressions_admin/fetch_data_update/8">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-lg font-weight-bold text-uppercase mb-1">Lightweight Jewelry Total</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <h3 class="text-primary">186</h3>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-
+                    <!-- Get the Category Details -->
+                    <?php echo categories_cell($categories, 0);
+                    ?>
 
                     <div class="col-xl-3 col-md-6 mb-4">
                         <div class="card border-left-success shadow h-100 py-2">
@@ -190,25 +233,8 @@
                     </div>
                 </div>
                 <div class="row dashboard-boxes-row">
-
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card border-left-primary shadow h-100 py-2">
-                            <a href="https://www.igi.org/expressions_admin/fetch_data_update/5">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-lg font-weight-bold text-uppercase mb-1">Statement Piece Total</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <h3 class="text-primary">222</h3>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-
-
+                    <?php echo categories_cell($categories, 1);
+                    ?>
                     <div class="col-xl-3 col-md-6 mb-4">
                         <div class="card border-left-success shadow h-100 py-2">
                             <div class="card-body">
@@ -261,23 +287,8 @@
 
                 <div class="row dashboard-boxes-row">
 
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card border-left-primary shadow h-100 py-2">
-                            <a href="https://www.igi.org/expressions_admin/fetch_data_update/11">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-lg font-weight-bold text-uppercase mb-1">Accessory Total</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <h3 class="text-primary">128</h3>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-
+                    <?php echo categories_cell($categories, 2);
+                    ?>
 
                     <div class="col-xl-3 col-md-6 mb-4">
                         <div class="card border-left-success shadow h-100 py-2">

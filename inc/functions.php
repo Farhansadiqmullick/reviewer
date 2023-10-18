@@ -9,7 +9,7 @@ function logout_current_user()
     exit;
 }
 
-function add_jury_role()
+function add_roles()
 {
     $capabilities = array(
         'read'           => true,
@@ -17,10 +17,40 @@ function add_jury_role()
     );
 
     add_role('jury', 'Jury', $capabilities);
+    add_role('reviewer', 'Reviewer', $capabilities);
 
     $admin_role = get_role('administrator');
     if ($admin_role) {
         $admin_role->add_cap('jury_access');
     }
 }
-add_action('init', 'add_jury_role');
+add_action('init', 'add_roles');
+
+
+function get_all_design_category(){
+    global $wpdb;
+    $tablename = $wpdb->prefix . 'review';
+    return $wpdb->get_results("SELECT `category` FROM {$tablename} ORDER BY id DESC", ARRAY_A);
+}
+
+
+// function category_template_query_var($vars) {
+//     $vars[] = 'category_template';
+//     return $vars;
+// }
+// add_filter('query_vars', 'category_template_query_var');
+
+// function category_template($template) {
+//     $category_template = get_query_var('category_template');
+//     foreach(get_all_design_category() as $category){
+//         if (isset($_GET['page']) && $_GET['page'] == 'jury-worksheet' && isset($_GET['category_template']) && ($category_template == $category['category'])) {
+//             $template = dirname(__DIR__) . '/templates/category-template.php';   
+//         }
+//     }
+
+//     return $template;
+// }
+// add_filter('template_include', 'category_template');
+
+
+

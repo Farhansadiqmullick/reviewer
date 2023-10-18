@@ -23,13 +23,15 @@ function modal_form()
 
             <div class="modal-body">
                 <form id="submitPopup" action="#" method="post" enctype="multipart/form-data">
-                    <div class="row form-group">
-                    <label for="inputName">Name</label>
-                        <div class="col">
-                            <input type="text" name="firstName" class="form-control" placeholder="First name" required>
-                        </div>
-                        <div class="col">
-                            <input type="text" name="lastName" class="form-control" placeholder="Last name" required>
+                    <div class="form-group">
+                        <label for="inputName">Name</label>
+                        <div class="row">
+                            <div class="col">
+                                <input type="text" name="firstName" class="form-control" placeholder="First name" required>
+                            </div>
+                            <div class="col">
+                                <input type="text" name="lastName" class="form-control" placeholder="Last name" required>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">

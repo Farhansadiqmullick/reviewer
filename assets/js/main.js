@@ -13,9 +13,13 @@
           processData: false,
           success: function (response) {
               console.log(response);
+              alert("Thanks for submitting the design, we will contact you later");
+              $('.modal').hide();
+              window.location.reload();
           },
           error: function (errorThrown) {
               console.log(errorThrown);
+              alert('There has been an error on form submission. Please reload and try again');
           },
       });
   });

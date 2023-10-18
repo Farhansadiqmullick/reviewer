@@ -17,11 +17,13 @@ class DES_REVIEW
 {
     public $tablename;
     public $charset;
+    public $current_user;
     public function __construct()
     {
         global $wpdb;
         $this->charset = $wpdb->get_charset_collate();
         $this->tablename = $wpdb->prefix . 'review';
+        $this->current_user = '';
         $plugin_basename = plugin_basename(__FILE__);
         add_action('plugins_loaded', array($this, 'review_plugins_loaded'));
         add_action('admin_enqueue_scripts', array($this, 'load_assets'));
@@ -45,12 +47,12 @@ class DES_REVIEW
     public function load_assets($hooks)
     {
         wp_enqueue_style('google-nunito-min', 'https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i', null, '');
-        wp_enqueue_style('bootstrap-min', '//getbootstrap.com/docs/5.3/dist/css/bootstrap.min.css', null, '');
-
+        // wp_enqueue_style('bootstrap-min', '//getbootstrap.com/docs/5.3/dist/css/bootstrap.min.css', null, '');
+        wp_enqueue_style('sb-admin', plugin_dir_url(__FILE__) . 'assets/css/sb-admin.css', null, '', 'all');
         if ('toplevel_page_review' == $hooks) {
             wp_enqueue_style('font-awersome-min', plugin_dir_url(__FILE__) . 'assets/css/all.min.css', null, '', 'all');
             wp_enqueue_style('datatables-bootstrap-min', plugin_dir_url(__FILE__) . 'assets/css/dataTables-bootstrap.min.css', null, '', 'all');
-            wp_enqueue_style('sb-admin', plugin_dir_url(__FILE__) . 'assets/css/sb-admin.css', null, '', 'all');
+            // wp_enqueue_style('sb-admin', plugin_dir_url(__FILE__) . 'assets/css/sb-admin.css', null, '', 'all');
             wp_enqueue_style('custom', plugin_dir_url(__FILE__) . 'assets/css/custom.css', null, '', 'all');
             wp_enqueue_style('review-style', plugin_dir_url(__FILE__) . 'assets/css/style.css', null, rand(111, 999), 'all');
         }
@@ -89,6 +91,8 @@ jury4 varchar(60) NOT NULL DEFAULT '',
 jury5 varchar(60) NOT NULL DEFAULT '',
 PRIMARY KEY (id)
 ) $this->charset;");
+
+        wp_safe_redirect(admin_url('admin.php?page=review'));
     }
 
 
@@ -122,14 +126,17 @@ PRIMARY KEY (id)
     {
         add_menu_page('Design Review', 'Design Review', 'manage_options', 'review', [$this, 'review_options'], plugins_url('images/design.svg', __FILE__));
         add_submenu_page('review', 'Jury Worksheet', 'Jury Worksheet', 'jury_access', 'jury-worksheet', [$this, 'jury_worksheet_options']);
-
+        add_submenu_page('review', 'Single Design', 'Single Design', 'jury_access', 'single-design', [$this, 'jury_single_design_options']);
     }
 
     public function review_options()
     {
+        $this->current_user = wp_get_current_user();
         echo '<h3>Design Reviewer</h3>';
-        $current_user = wp_get_current_user();
-        if (in_array('jury', $current_user->roles)) {
+        if (in_array('jury', $this->current_user->roles)) {
+            wp_safe_redirect(admin_url('admin.php?page=jury-worksheet'));
+            exit;
+        } else if (in_array('reviewer', $this->current_user->roles)) {
             wp_safe_redirect(admin_url('admin.php?page=jury-worksheet'));
             exit;
         }
@@ -138,7 +145,14 @@ PRIMARY KEY (id)
 
     public function jury_worksheet_options()
     {
-        echo '<h3>Jury WorkSheet Page</h3>';
+        $this->current_user = wp_get_current_user();
+        echo '<h3>User Login as: ' . ucwords($this->current_user->roles[0]) . '</h3>';
+        $this->include_files('inc/admin-dashboard.php');
+    }    
+    
+    public function jury_single_design_options()
+    {
+        $this->include_files('inc/single-dashboard.php');
     }
 }
 
