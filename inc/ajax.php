@@ -32,11 +32,6 @@ function handle_submit_form()
         }
     }
 
-    // update_option( 'submit_form_data', [
-    //         'data' => $_POST,
-    //         'uploaded_file_url' => isset($uploaded_file_url) ? $uploaded_file_url : ''
-    // ] );
-
 
     $data = [
         'name' => (isset($_POST['firstName']) && isset($_POST['lastName'])) ? $_POST['firstName'] . ' ' . $_POST['lastName'] : '',
@@ -84,4 +79,40 @@ function document_upload_dir($default_dir_data)
         'baseurl' => plugin_dir_url(__DIR__),
         'error'  => false,
     );
+}
+
+add_action('wp_ajax_key_change', 'handle_change_key');
+
+function handle_change_key()
+{
+    if (isset($_POST['nonce'])) {
+        if (!wp_verify_nonce($_POST['nonce'], 'review')) {
+            wp_send_json_error(['error' => 'Unauthorized Access']);
+        }
+    }
+
+    if (!isset($_POST['key'])) {
+        return;
+    } else {
+        update_option('key_value', $_POST['key']);
+    }
+    global $wpdb;
+    $tablename = $wpdb->prefix . 'review';
+
+    $category_name = isset($_POST['category']) ? $_POST['category'] : '';
+    // Use prepare to avoid SQL injection
+    $query = $wpdb->prepare("SELECT * FROM {$tablename} WHERE category = %s", $category_name);
+    $results = $wpdb->get_results($query);
+    // Check for errors
+    if ($wpdb->last_error) {
+        wp_send_json_error("Database error: " . $wpdb->last_error);
+    } else {
+        $key_value = isset($_POST['key']) ? absint($_POST['key']) : 0;
+        $result = get_data_by_key($results, $key_value);
+        $value = isset($result) && !empty($result) ? $result : [];
+    }
+
+    wp_send_json_success(['key' => $key_value, 'value' => $value]);
+
+    wp_die();
 }

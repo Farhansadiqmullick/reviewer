@@ -49,22 +49,28 @@ class DES_REVIEW
         wp_enqueue_style('google-nunito-min', 'https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i', null, '');
         // wp_enqueue_style('bootstrap-min', '//getbootstrap.com/docs/5.3/dist/css/bootstrap.min.css', null, '');
         wp_enqueue_style('sb-admin', plugin_dir_url(__FILE__) . 'assets/css/sb-admin.css', null, '', 'all');
-        if ('toplevel_page_review' == $hooks) {
+        $plugin_pages = [
+            'design-review_page_single-design', 'toplevel_page_review', 'design-review_page_jury-worksheet',
+        ];
+
+        if (in_array($hooks, $plugin_pages)) {
             wp_enqueue_style('font-awersome-min', plugin_dir_url(__FILE__) . 'assets/css/all.min.css', null, '', 'all');
             wp_enqueue_style('datatables-bootstrap-min', plugin_dir_url(__FILE__) . 'assets/css/dataTables-bootstrap.min.css', null, '', 'all');
-            // wp_enqueue_style('sb-admin', plugin_dir_url(__FILE__) . 'assets/css/sb-admin.css', null, '', 'all');
+            wp_enqueue_style('jq-zoom', plugin_dir_url(__FILE__) . 'assets/css/jquery.jqZoom.css', null, '', 'all');
             wp_enqueue_style('custom', plugin_dir_url(__FILE__) . 'assets/css/custom.css', null, '', 'all');
             wp_enqueue_style('review-style', plugin_dir_url(__FILE__) . 'assets/css/style.css', null, rand(111, 999), 'all');
         }
-        wp_enqueue_script('jquery-slim', '//code.jquery.com/jquery-3.3.1.slim.min.js');
+        // wp_enqueue_script('jquery-slim', '//code.jquery.com/jquery-3.3.1.slim.min.js');
+        wp_enqueue_script('jquery-min', '//code.jquery.com/jquery-3.6.0.min.js');
         wp_enqueue_script('popper-bootstrap', '//cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js', ['jquery'], '', true);
         wp_enqueue_script('bootstrap-min', '//cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js', ['jquery'], '', true);
+        wp_enqueue_script('jq-zoom', plugin_dir_url(__FILE__) . 'assets/js/jquery.jqZoom.js', ['jquery'], rand(111, 999), true);
         wp_enqueue_script('review-script', plugin_dir_url(__FILE__) . 'assets/js/main.js', ['jquery'], rand(111, 999), true);
         $data_to_localize = array(
             'ajaxurl' => admin_url("admin-ajax.php"),
             'nonce'   => wp_create_nonce('review'),
         );
-        $localize_names = array('formurl');
+        $localize_names = array('formurl', 'keyurl');
 
         foreach ($localize_names as $variable_name) {
             wp_localize_script('review-script', $variable_name, $data_to_localize);
@@ -84,6 +90,7 @@ category varchar(60) NOT NULL DEFAULT '',
 segment varchar(60) NOT NULL DEFAULT '',
 description varchar(256) NOT NULL DEFAULT '',
 file varchar(120) NOT NULL DEFAULT '',
+review varchar(300) NOT NULL DEFAULT '',
 jury1 varchar(60) NOT NULL DEFAULT '',
 jury2 varchar(60) NOT NULL DEFAULT '',
 jury3 varchar(60) NOT NULL DEFAULT '',
@@ -148,8 +155,8 @@ PRIMARY KEY (id)
         $this->current_user = wp_get_current_user();
         echo '<h3>User Login as: ' . ucwords($this->current_user->roles[0]) . '</h3>';
         $this->include_files('inc/admin-dashboard.php');
-    }    
-    
+    }
+
     public function jury_single_design_options()
     {
         $this->include_files('inc/single-dashboard.php');

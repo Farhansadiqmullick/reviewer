@@ -27,11 +27,36 @@ function add_roles()
 add_action('init', 'add_roles');
 
 
-function get_all_design_category(){
+function get_all_design_category()
+{
     global $wpdb;
     $tablename = $wpdb->prefix . 'review';
     return $wpdb->get_results("SELECT `category` FROM {$tablename} ORDER BY id DESC", ARRAY_A);
 }
+
+
+function get_data_by_key($data, $key) {
+    $result = [
+        'title' => '',
+        'image' => '',
+        'segment' => '',
+        'category' => '',
+        'description' => ''
+    ];
+
+    if (isset($data[$key])) {
+        $result = [
+            'title' => $data[$key]->name,
+            'image' => $data[$key]->file,
+            'segment' => $data[$key]->segment,
+            'category' => $data[$key]->category,
+            'description' => $data[$key]->description
+        ];
+    }
+
+    return $result;
+}
+
 
 
 // function category_template_query_var($vars) {
@@ -51,6 +76,3 @@ function get_all_design_category(){
 //     return $template;
 // }
 // add_filter('template_include', 'category_template');
-
-
-
