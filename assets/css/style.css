@@ -20,11 +20,28 @@
     backface-visibility: hidden;
 }
 
-.prev, .next{
+.prev, .next .back{
     padding: 6px 20px;
     font-weight: 600;
     margin-right: 20px;
     border: none;
     backface-visibility: hidden;
     border-radius: 8px;
+}
+
+.back{
+    text-decoration:none;
+}
+
+.single-dashboard .zoom-box .viewer-box{
+    z-index: 999;
+}
+
+.form-check input, .form-check label{
+    z-index: 0;
+    position: relative;
+}
+
+.zoom-box .viewer-box {
+    z-index: 999;
 }

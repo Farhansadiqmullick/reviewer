@@ -16,7 +16,6 @@ if ($wpdb->last_error) {
 } else {
     $key_value = get_option('key_value') ? get_option('key_value') : 0;
     $total = absint(count($results));
-    // var_dump($key_value);
     if (isset($results[$key_value])) {
         $result = get_data_by_key($results, $key_value);
         $value = isset($result) && !empty($result) ? $result : [];
@@ -27,16 +26,17 @@ if ($wpdb->last_error) {
 
 <div class="single-design mb-4">
     <div class="container" style="background-color: #eee;">
-        <span class="float-right">Back</span>
+        <a href="<?php echo esc_url(admin_url('admin.php?page=jury-worksheet')); ?>" class="float-right btn btn-secondary back">Back</a>
         <div class="d-flex flex-column m-3 p-0 w-75">
             <?php
             if ($value) :
                 if ($value['title']) {
                     printf('<h4 class="entry-content d-inline-block mb-4">%s</h4>', esc_html($value['title']));
                 }
-                $key_value = get_option('key_value');
-                if ($key_value)
-                    printf('<h6>Items <span class="review-key">%s</span>/<span>%s</span></h6>', $key_value, $total);
+                $key_value =  get_option('key_value');
+                // if ($key_value) {
+                printf('<h6>Items <span class="review-key">%s</span>/<span>%s</span></h6>', $key_value, $total);
+                // }
             ?>
                 <div class="d-flex flex-row m-2">
                     <button class="prev btn btn-secondary" data-category="<?php echo $category_name; ?>" data-key=<?php echo $key_value; ?> data-count="0">Prev</button>
@@ -86,15 +86,22 @@ if ($wpdb->last_error) {
                 ?>
 
                 <div class="d-flex flex-row m-2">
-                    <button class="pass">Pass</button>
-                    <button class="fail">Fail</button>
+                    <div class="form-check">
+                        <input type="radio" id="passRadio" name="status" value="Pass" />
+                        <label class="pass form-check-label" for="passRadio">Pass</label>
+
+                        <input type="radio" id="failRadio" name="status" value="Fail" />
+                        <label class="fail form-check-label" for="failRadio">Fail</label>
+                    </div>
                 </div>
 
                 <div class="d-flex flex-column w-100 my-3">
                     <span>Issue</span>
                     <textarea name="issue" id="issue" columns="100" rows="5"></textarea>
                 </div>
+                <input type="submit" name="single-dashboard-submit" class="single-dashboard-submit btn btn-primary text-white fw-bold px-5 py-2" value="Submit or Review" />
             </div>
+
         </div>
     <?php endif; ?>
     </div>
