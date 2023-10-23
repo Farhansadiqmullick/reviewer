@@ -68,6 +68,7 @@
           var image = $(".single-design .zoom-box img");
           var segment = $(".single-design p.segment");
           var category = $(".single-design p.review-category");
+          var review = $(".single-design .given-review");
           console.log("after clicking currentKey " + currentKey);
 
           //html inserting
@@ -76,6 +77,7 @@
           image.attr("src", response.data.value.image);
           segment.html(response.data.value.segment);
           category.html(response.data.value.category);
+          review.html(response.data.value.review);
           issueLinkOpen();
           // Enable or disable Prev and Next buttons based on the currentKey
           $(".prev").prop("disabled", currentKey === 0);
@@ -118,17 +120,89 @@
       // Get references to the buttons and the textarea
       const failButton = document.querySelector(".fail");
       const issueTextarea = document.getElementById("issue");
-      issueTextarea.style.display = "none";
-      issueTextarea.style.opacity = 0.5;
+      if (issueTextarea) {
+        issueTextarea.style.display = "none";
+        issueTextarea.style.opacity = 0.5;
 
-      failButton.addEventListener("click", function () {
-        // Toggle the visibility of the textarea
-        if (issueTextarea.style.display === "none") {
-          issueTextarea.style.display = "block";
-        }else{
-          issueTextarea.style.display = "none";
-        }
+        failButton.addEventListener("click", function () {
+          // Toggle the visibility of the textarea
+          if (issueTextarea.style.display === "none") {
+            issueTextarea.style.display = "block";
+          } else {
+            issueTextarea.style.display = "none";
+          }
+        });
+      }
+    }
+
+    //ajax button for submit for pass or fail for reviewer
+    $(".single-dashboard-submit").click(function (e) {
+      e.preventDefault();
+
+      // Get the review ID, status, and category from the user
+      var review_id = $(".segment").data("id");
+      var status = $('[name="status"]:checked').val();
+      var category = $(".review-category").text();
+      var issue = $('[name="issue"]').val();
+
+      // If the user has checked the "Fail" radio button, join the issue value with a new line
+      if (status === "Fail") {
+        issue = "Fail\n" + issue;
+      } else {
+        issue = "Pass";
+      }
+
+      // Send an Ajax request to update the review status
+      $.ajax({
+        url: reviewstatus.ajaxurl,
+        method: "POST",
+        data: {
+          action: "review_status_update",
+          review_id: review_id,
+          category: category,
+          issue: issue,
+          nonce: reviewstatus.nonce,
+        },
+        success: function (response) {
+          if (response.success) {
+            // Update the UI to show that the review status has been updated
+            // ...
+          }
+        },
+      });
+    });
+
+    //total Count
+    function totalValueCount(categories) {
+      var category_count = $(categories);
+      var totalCategory = 0;
+
+      category_count.each(function () {
+        totalCategory += parseInt($(this).text(), 10);
+      });
+
+      // Send AJAX request
+      $.ajax({
+        url: totalcategory.ajaxurl,
+        method: "POST",
+        data: {
+          action: "total_review_value",
+          total: totalCategory,
+          category: categories.slice(1),
+          nonce: totalcategory.nonce,
+        },
+        success: function (response) {
+          console.log(response);
+        },
+        error: function (xhr, status, error) {
+          console.log("Error:", error);
+        },
       });
     }
+
+    totalValueCount(".categories-count");
+    totalValueCount(".pass-count");
+    totalValueCount(".pending-count");
+    totalValueCount(".fail-count");
   });
 })(jQuery);

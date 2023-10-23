@@ -35,21 +35,26 @@ function get_all_design_category()
 }
 
 
-function get_data_by_key($data, $key) {
+function get_data_by_key($data, $key)
+{
     $result = [
+        'id' => '',
         'title' => '',
         'image' => '',
         'segment' => '',
         'category' => '',
-        'description' => ''
+        'description' => '',
+        'review' => '',
     ];
 
     if (isset($data[$key])) {
         $result = [
+            'id' => $data[$key]->id,
             'title' => $data[$key]->name,
             'image' => $data[$key]->file,
             'segment' => $data[$key]->segment,
             'category' => $data[$key]->category,
+            'review' => $data[$key]->review,
             'description' => $data[$key]->description
         ];
     }
@@ -58,6 +63,38 @@ function get_data_by_key($data, $key) {
 }
 
 
+//get all category tasks
+
+function get_all_tasks()
+{
+    global $wpdb;
+
+    // Define your table name
+    $tablename = $wpdb->prefix . 'review';
+
+    // Get distinct categories from the table
+    $categories = $wpdb->get_col("SELECT DISTINCT `category` FROM {$tablename}");
+
+    foreach ($categories as $category) {
+        // Count for 'pass' reviews
+        $pass_count = (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$tablename} WHERE `category` = %s AND `review` LIKE 'pass'", $category));
+
+
+        // Count for 'fail' reviews
+        $fail_count = (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$tablename} WHERE `category` = %s AND `review` LIKE 'fail%'", $category));
+        // Count for 'pending' reviews (neither 'pass' nor 'fail')
+        $pending_count = (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$tablename} WHERE `category` = %s AND `review` NOT LIKE 'pass' AND `review` NOT LIKE 'fail%'", $category));
+
+        // Update the WordPress option for the current category
+        update_option(str_replace([' ', '_'], '-', strtolower($category)) . "_option", array(
+            'pass' => $pass_count,
+            'fail' => $fail_count,
+            'pending' => $pending_count
+        ));
+    }
+}
+
+add_action('admin_init', 'get_all_tasks');
 
 // function category_template_query_var($vars) {
 //     $vars[] = 'category_template';

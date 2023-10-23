@@ -32,7 +32,7 @@ function categories_cell($all_category, $key)
         $count = get_categories_count($category);
         $url = admin_url('admin.php?page=single-design&category_template=' . urlencode($category));
         // Create the HTML for the category cell at the specified position
-$cell = <<<HEREDOC
+        $cell = <<<HEREDOC
 <div class="col-xl-3 col-md-6 mb-4">
     <div class="card border-left-primary shadow h-100 py-2">
         <a href="$url">
@@ -42,7 +42,7 @@ $cell = <<<HEREDOC
                         <div class="text-lg font-weight-bold text-uppercase mb-1">$category</div>
                     </div>
                     <div class="col-auto">
-                        <h3 class="text-primary">$count</h3>
+                        <h3 class="text-primary categories-count">$count</h3>
                     </div>
                 </div>
             </div>
@@ -56,6 +56,78 @@ HEREDOC;
         return '';
     }
 }
+
+function get_review_content($option_name)
+{
+    $options = get_option($option_name);
+
+    if (!$options) return []; // If the option doesn't exist or has no values
+
+    $content = [];
+
+    foreach ($options as $key => $option) {
+        switch ($key) {
+            case 'pass':
+                $content[$key] = '<div class="col-xl-3 col-md-6 mb-4">
+                                    <div class="card border-left-success shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col mr-2">
+                                                    <div class="text-lg font-weight-bold text-uppercase mb-1">Pass</div>
+                                                </div>
+                                                <div class="col-auto">
+                                                <h3 class="text-success pass-count">' . $option . '</h3>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>';
+                break;
+
+            case 'pending':
+                $content[$key] = '<div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-lg font-weight-bold text-uppercase mb-1">Pending</div>
+                            </div>
+                            <div class="col-auto">
+                                  <h3 class="text-warning pending-count">' . $option . '</h3>
+                              </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>';
+                break;
+
+            case 'fail':
+                $content[$key] = '<div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-danger shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-lg font-weight-bold text-uppercase mb-1">Fail</div>
+                            </div>
+                            <div class="col-auto">
+                                  <h3 class="text-danger fail-count">' . $option . '</h3>
+                              </div>
+                        </div>
+                    </div>
+                </div>
+            </div>';
+
+                break;
+
+            default:
+                continue;
+        }
+    }
+
+    return $content;
+}
+
 
 
 ?>
@@ -122,9 +194,14 @@ HEREDOC;
                                         <div class="text-lg font-weight-bold text-uppercase mb-1">Total</div>
 
                                     </div>
-                                    <div class="col-auto">
-                                        <h3 class="text-primary">536</h3>
-                                    </div>
+                                    <?php
+                                    $categories_total_count = get_option('categories-count');
+                                    if ($categories_total_count) {
+                                        echo '<div class="col-auto">';
+                                        printf('<h3 class="text-primary">%s</h3>', esc_attr($categories_total_count));
+                                        echo '</div>';
+                                    }
+                                    ?>
                                 </div>
                             </div>
                         </div>
@@ -138,9 +215,14 @@ HEREDOC;
                                     <div class="col mr-2">
                                         <div class="text-lg font-weight-bold text-uppercase mb-1">Pass</div>
                                     </div>
-                                    <div class="col-auto">
-                                        <h3 class="text-success">46</h3>
-                                    </div>
+                                    <?php
+                                    $pass_count = get_option('pass-count');
+                                    if ($pass_count) {
+                                        echo '<div class="col-auto">';
+                                        printf('<h3 class="text-success">%s</h3>', esc_attr($pass_count));
+                                        echo '</div>';
+                                    }
+                                    ?>
                                 </div>
                             </div>
                         </div>
@@ -153,9 +235,15 @@ HEREDOC;
                                     <div class="col mr-2">
                                         <div class="text-lg font-weight-bold text-uppercase mb-1">Pending</div>
                                     </div>
-                                    <div class="col-auto">
-                                        <h3 class="text-warning">0</h3>
-                                    </div>
+
+                                    <?php
+                                    $pending_count = get_option('pending-count');
+                                    if ($pending_count) {
+                                        echo '<div class="col-auto">';
+                                        printf('<h3 class="text-warning">%s</h3>', esc_attr($pending_count));
+                                        echo '</div>';
+                                    }
+                                    ?>
                                 </div>
                             </div>
                         </div>
@@ -167,9 +255,14 @@ HEREDOC;
                                     <div class="col mr-2">
                                         <div class="text-lg font-weight-bold text-uppercase mb-1">Fail</div>
                                     </div>
-                                    <div class="col-auto">
-                                        <h3 class="text-danger">490</h3>
-                                    </div>
+                                    <?php
+                                    $fail_count = get_option('fail-count');
+                                    if ($fail_count) {
+                                        echo '<div class="col-auto">';
+                                        printf('<h3 class="text-danger">%s</h3>', esc_attr($fail_count));
+                                        echo '</div>';
+                                    }
+                                    ?>
                                 </div>
                             </div>
                         </div>
@@ -179,58 +272,52 @@ HEREDOC;
 
                     <!-- Get the Category Details -->
                     <?php echo categories_cell($categories, 0);
+                    $convertible_jewelry_content = get_review_content('convertible-jewelry_option');
+                    echo wp_kses($convertible_jewelry_content['pass'], 'post');
+                    echo wp_kses($convertible_jewelry_content['pending'], 'post');
+                    echo wp_kses($convertible_jewelry_content['fail'], 'post');
                     ?>
 
-                    <div class="col-xl-3 col-md-6 mb-4">
+                    <!-- <div class="col-xl-3 col-md-6 mb-4">
                         <div class="card border-left-success shadow h-100 py-2">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-lg font-weight-bold text-uppercase mb-1">Pass</div>
                                     </div>
-                                    <div class="col-auto">
-                                        <h3 class="text-success">14</h3>
-                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
 
 
 
-                    <div class="col-xl-3 col-md-6 mb-4">
+                    <!-- <div class="col-xl-3 col-md-6 mb-4">
                         <div class="card border-left-warning shadow h-100 py-2">
                             <div class="card-body">
-                                <a href="https://www.igi.org/expressions_admin/fetch_data_update//P">
+                                <a href="">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-lg font-weight-bold text-uppercase mb-1">Pending</div>
-                                        </div>
-
-                                        <div class="col-auto">
-                                            <h3 class="text-warning">0</h3>
                                         </div>
                                     </div>
                                 </a>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
-                    <div class="col-xl-3 col-md-6 mb-4">
+                    <!-- <div class="col-xl-3 col-md-6 mb-4">
                         <div class="card border-left-danger shadow h-100 py-2">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-lg font-weight-bold text-uppercase mb-1">Fail</div>
                                     </div>
-                                    <div class="col-auto">
-                                        <h3 class="text-danger">172</h3>
-                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="row dashboard-boxes-row">
                     <?php echo categories_cell($categories, 1);
@@ -243,7 +330,7 @@ HEREDOC;
                                         <div class="text-lg font-weight-bold text-uppercase mb-1">Pass</div>
                                     </div>
                                     <div class="col-auto">
-                                        <h3 class="text-success">16</h3>
+                                        <h3 class="text-success pass-count">16</h3>
                                     </div>
                                 </div>
                             </div>
@@ -262,7 +349,7 @@ HEREDOC;
                                             <div class="text-lg font-weight-bold text-uppercase mb-1">Pending</div>
                                         </div>
                                         <div class="col-auto">
-                                            <h3 class="text-warning">0</h3>
+                                            <h3 class="text-warning pending-count">0</h3>
                                         </div>
                                     </div>
                                 </a>
@@ -277,7 +364,7 @@ HEREDOC;
                                         <div class="text-lg font-weight-bold text-uppercase mb-1">Fail</div>
                                     </div>
                                     <div class="col-auto">
-                                        <h3 class="text-danger">206</h3>
+                                        <h3 class="text-danger fail-count">206</h3>
                                     </div>
                                 </div>
                             </div>
@@ -298,7 +385,7 @@ HEREDOC;
                                         <div class="text-lg font-weight-bold text-uppercase mb-1">Pass</div>
                                     </div>
                                     <div class="col-auto">
-                                        <h3 class="text-success">16</h3>
+                                        <h3 class="text-success pass-count">16</h3>
                                     </div>
                                 </div>
                             </div>
@@ -317,7 +404,7 @@ HEREDOC;
                                             <div class="text-lg font-weight-bold text-uppercase mb-1">Pending</div>
                                         </div>
                                         <div class="col-auto">
-                                            <h3 class="text-warning">0</h3>
+                                            <h3 class="text-warning pending-count">0</h3>
                                         </div>
                                     </div>
                                 </a>
@@ -332,7 +419,7 @@ HEREDOC;
                                         <div class="text-lg font-weight-bold text-uppercase mb-1">Fail</div>
                                     </div>
                                     <div class="col-auto">
-                                        <h3 class="text-danger">112</h3>
+                                        <h3 class="text-danger fail-count">112</h3>
                                     </div>
                                 </div>
                             </div>
@@ -363,7 +450,7 @@ HEREDOC;
         <footer class="sticky-footer bg-white">
             <div class="container my-auto">
                 <div class="copyright text-center my-auto">
-                    <span>Copyright &copy; IGI Expressions 2021</span>
+                    <span>Copyright &copy; IGI Expressions 2023</span>
                 </div>
             </div>
         </footer>

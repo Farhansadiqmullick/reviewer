@@ -34,9 +34,7 @@ if ($wpdb->last_error) {
                     printf('<h4 class="entry-content d-inline-block mb-4">%s</h4>', esc_html($value['title']));
                 }
                 $key_value =  get_option('key_value');
-                // if ($key_value) {
                 printf('<h6>Items <span class="review-key">%s</span>/<span>%s</span></h6>', $key_value, $total);
-                // }
             ?>
                 <div class="d-flex flex-row m-2">
                     <button class="prev btn btn-secondary" data-category="<?php echo $category_name; ?>" data-key=<?php echo $key_value; ?> data-count="0">Prev</button>
@@ -61,7 +59,7 @@ if ($wpdb->last_error) {
                         <?php
                         if ($value['segment']) {
                             echo '<span>Segement</span>';
-                            printf('<p class="segment">%s</p>', esc_html($value['segment']));
+                            printf('<p class="segment" data-id=%s>%s</p>', absint($value['id']), esc_html($value['segment']));
                         }
                         ?>
 
@@ -87,19 +85,23 @@ if ($wpdb->last_error) {
 
                 <div class="d-flex flex-row m-2">
                     <div class="form-check">
-                        <input type="radio" id="passRadio" name="status" value="Pass" />
+                        <input type="radio" id="passRadio" name="status" value="pass" />
                         <label class="pass form-check-label" for="passRadio">Pass</label>
 
-                        <input type="radio" id="failRadio" name="status" value="Fail" />
+                        <input type="radio" id="failRadio" name="status" value="fail" />
                         <label class="fail form-check-label" for="failRadio">Fail</label>
                     </div>
                 </div>
-
+                <?php
+                if (isset($value['review'])) : ?>
+                    <div class="mt-4 bg-white text-dark">Review given: <p class="given-review" style="color:#BE768A"></p>
+                    </div>
+                <?php endif; ?>
                 <div class="d-flex flex-column w-100 my-3">
                     <span>Issue</span>
                     <textarea name="issue" id="issue" columns="100" rows="5"></textarea>
                 </div>
-                <input type="submit" name="single-dashboard-submit" class="single-dashboard-submit btn btn-primary text-white fw-bold px-5 py-2" value="Submit or Review" />
+                <input type="submit" name="single-dashboard-submit" class="single-dashboard-submit btn btn-primary text-white fw-bold px-5 py-2" value="Submit" />
             </div>
 
         </div>

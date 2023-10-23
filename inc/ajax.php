@@ -116,3 +116,50 @@ function handle_change_key()
 
     wp_die();
 }
+
+
+add_action('wp_ajax_review_status_update', 'update_review_status');
+function update_review_status()
+{
+    if (isset($_POST['nonce'])) {
+        if (!wp_verify_nonce($_POST['nonce'], 'review')) {
+            wp_send_json_error(['error' => 'Unauthorized Access']);
+        }
+    }
+    global $wpdb;
+    // Get the review ID, status, and category from the user
+    $review_id = $_POST['review_id'];
+    $category = $_POST['category'];
+    $issue = strtolower($_POST['issue']);
+    // Use prepare to avoid SQL injection
+    $query = $wpdb->prepare("UPDATE {$wpdb->prefix}review SET review=%s WHERE id=%d AND category=%s", $issue, $review_id, $category);
+
+    $wpdb->query($query);
+    wp_send_json_success(['success' => true, 'note' => 'review inserted']);
+    wp_die();
+}
+
+
+add_action('wp_ajax_total_review_value', 'total_review_value_callback');
+// The function that handles the AJAX request
+function total_review_value_callback()
+{
+    if (isset($_POST['nonce'])) {
+        if (!wp_verify_nonce($_POST['nonce'], 'review')) {
+            wp_send_json_error(['error' => 'Unauthorized Access']);
+        }
+    }
+
+    if (isset($_POST['category']) && isset($_POST['total'])) {
+        $category = sanitize_text_field($_POST['category']);
+        $total = intval($_POST['total']);
+
+        // Update the option
+        update_option($category, $total);
+
+        wp_send_json_success(["Option updated successfully!"]);
+    } else {
+        wp_send_json_error("Invalid data received!");
+    }
+    wp_die();
+}
