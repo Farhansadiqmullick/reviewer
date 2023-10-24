@@ -1,47 +1,61 @@
 /* single admin dashboard */
-.pass{
-    padding: 6px 20px;
-    color: white;
-    font-weight: 600;
-    background-color: green;
-    margin-right: 20px;
-    border: none;
-    backface-visibility: hidden;
-    border-radius: 8px;
+.pass {
+  padding: 6px 20px;
+  color: white;
+  font-weight: 600;
+  background-color: green;
+  margin-right: 20px;
+  border: none;
+  backface-visibility: hidden;
+  border-radius: 8px;
 }
 
-.fail{
-    padding: 6px 20px;
-    color: white;
-    font-weight: 600;
-    background-color: lightcoral;
-    border-radius: 8px;
-    border: none;
-    backface-visibility: hidden;
+.fail {
+  padding: 6px 20px;
+  color: white;
+  font-weight: 600;
+  background-color: lightcoral;
+  border-radius: 8px;
+  border: none;
+  backface-visibility: hidden;
 }
 
-.prev, .next .back{
-    padding: 6px 20px;
-    font-weight: 600;
-    margin-right: 20px;
-    border: none;
-    backface-visibility: hidden;
-    border-radius: 8px;
+.prev,
+.next .back {
+  padding: 6px 20px;
+  font-weight: 600;
+  margin-right: 20px;
+  border: none;
+  backface-visibility: hidden;
+  border-radius: 8px;
 }
 
-.back{
-    text-decoration:none;
+.back {
+  text-decoration: none;
 }
 
-.single-dashboard .zoom-box .viewer-box{
-    z-index: 999;
+.single-dashboard .zoom-box .viewer-box {
+  z-index: 999;
 }
 
-.form-check input, .form-check label{
-    z-index: 0;
-    position: relative;
+.form-check input,
+.form-check label {
+  z-index: 0;
+  position: relative;
 }
 
 .zoom-box .viewer-box {
-    z-index: 999;
+  z-index: 999;
+}
+
+.icon-rectangle::before {
+  content: url("https://api.iconify.design/icon-park-twotone/rectangle.svg?color=%23f1d3dd&width=32&height=32");
+}
+
+.icon-rectangle-pink:before {
+  content: url("https://api.iconify.design/icon-park-twotone/rectangle.svg?color=%23c74374&width=32&height=32");
+}
+
+.icon-rectangle:hover::before {
+  content: url("https://api.iconify.design/icon-park-twotone/rectangle.svg?color=%23c74374&width=32&height=32");
 }

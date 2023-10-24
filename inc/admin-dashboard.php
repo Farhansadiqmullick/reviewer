@@ -23,112 +23,6 @@ if ($results) {
     echo 'No Category Found';
 }
 
-function categories_cell($all_category, $key)
-{
-    $all_category = array_values(array_unique($all_category));
-    // Check if the key exists in the array
-    if (isset($all_category[$key])) {
-        $category = $all_category[$key];
-        $count = get_categories_count($category);
-        $url = admin_url('admin.php?page=single-design&category_template=' . urlencode($category));
-        // Create the HTML for the category cell at the specified position
-        $cell = <<<HEREDOC
-<div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-left-primary shadow h-100 py-2">
-        <a href="$url">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-lg font-weight-bold text-uppercase mb-1">$category</div>
-                    </div>
-                    <div class="col-auto">
-                        <h3 class="text-primary categories-count">$count</h3>
-                    </div>
-                </div>
-            </div>
-        </a>
-    </div>
-</div>
-HEREDOC;
-        return $cell;
-    } else {
-        // Handle the case where the key does not exist in the array
-        return '';
-    }
-}
-
-function get_review_content($option_name)
-{
-    $options = get_option($option_name);
-
-    if (!$options) return []; // If the option doesn't exist or has no values
-
-    $content = [];
-
-    foreach ($options as $key => $option) {
-        switch ($key) {
-            case 'pass':
-                $content[$key] = '<div class="col-xl-3 col-md-6 mb-4">
-                                    <div class="card border-left-success shadow h-100 py-2">
-                                        <div class="card-body">
-                                            <div class="row no-gutters align-items-center">
-                                                <div class="col mr-2">
-                                                    <div class="text-lg font-weight-bold text-uppercase mb-1">Pass</div>
-                                                </div>
-                                                <div class="col-auto">
-                                                <h3 class="text-success pass-count">' . $option . '</h3>
-                                            </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>';
-                break;
-
-            case 'pending':
-                $content[$key] = '<div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-left-warning shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-lg font-weight-bold text-uppercase mb-1">Pending</div>
-                            </div>
-                            <div class="col-auto">
-                                  <h3 class="text-warning pending-count">' . $option . '</h3>
-                              </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>';
-                break;
-
-            case 'fail':
-                $content[$key] = '<div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-left-danger shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-lg font-weight-bold text-uppercase mb-1">Fail</div>
-                            </div>
-                            <div class="col-auto">
-                                  <h3 class="text-danger fail-count">' . $option . '</h3>
-                              </div>
-                        </div>
-                    </div>
-                </div>
-            </div>';
-
-                break;
-
-            default:
-                continue;
-        }
-    }
-
-    return $content;
-}
-
-
 
 ?>
 <div id="wrapper">
@@ -321,8 +215,14 @@ function get_review_content($option_name)
                 </div>
                 <div class="row dashboard-boxes-row">
                     <?php echo categories_cell($categories, 1);
+                    
+                    $statement_piece_option = get_review_content('statement-piece_option');
+                    echo wp_kses($statement_piece_option['pass'], 'post');
+                    echo wp_kses($statement_piece_option['pending'], 'post');
+                    echo wp_kses($statement_piece_option['fail'], 'post');
+                    
                     ?>
-                    <div class="col-xl-3 col-md-6 mb-4">
+                    <!-- <div class="col-xl-3 col-md-6 mb-4">
                         <div class="card border-left-success shadow h-100 py-2">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
@@ -336,10 +236,6 @@ function get_review_content($option_name)
                             </div>
                         </div>
                     </div>
-
-
-
-
                     <div class="col-xl-3 col-md-6 mb-4">
                         <div class="card border-left-warning shadow h-100 py-2">
                             <div class="card-body">
@@ -369,15 +265,20 @@ function get_review_content($option_name)
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
 
                 <div class="row dashboard-boxes-row">
 
                     <?php echo categories_cell($categories, 2);
+                    $perfume_bottle_jewelry_box_option = get_review_content('perfume-bottle-or-jewelry-box_option');
+                    echo wp_kses($perfume_bottle_jewelry_box_option['pass'], 'post');
+                    echo wp_kses($perfume_bottle_jewelry_box_option['pending'], 'post');
+                    echo wp_kses($perfume_bottle_jewelry_box_option['fail'], 'post');
+
                     ?>
 
-                    <div class="col-xl-3 col-md-6 mb-4">
+                    <!-- <div class="col-xl-3 col-md-6 mb-4">
                         <div class="card border-left-success shadow h-100 py-2">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
@@ -391,10 +292,6 @@ function get_review_content($option_name)
                             </div>
                         </div>
                     </div>
-
-
-
-
                     <div class="col-xl-3 col-md-6 mb-4">
                         <div class="card border-left-warning shadow h-100 py-2">
                             <div class="card-body">
@@ -424,7 +321,7 @@ function get_review_content($option_name)
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
 
                 <!--dashboard-end-->
@@ -435,11 +332,11 @@ function get_review_content($option_name)
                     <!-- <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
         <h1 class="h3 mb-4 text-black">Expressions List</h1>
     </div> -->
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 text-center">
+                    <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 text-center">
                         <a class='btn btn-primary' href='https://www.igi.org/expressions_admin/submissions_check/'>Start Review</a>
 
                         <a class='btn btn-primary' data-fancybox="" href='https://www.igi.org//assets/expressions-admin/video/ReviewerProcessVideo.mp4'>Process Video</a>
-                    </div>
+                    </div> -->
                 </div>
 
             </div><!--container-fluid--->

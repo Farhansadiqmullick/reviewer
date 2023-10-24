@@ -34,6 +34,17 @@ function get_all_design_category()
     return $wpdb->get_results("SELECT `category` FROM {$tablename} ORDER BY id DESC", ARRAY_A);
 }
 
+function get_unique_categories()
+{
+    $categories = get_all_design_category();
+    $category_name = [];
+    foreach ($categories as $category) {
+        $category_name[] = $category['category'];
+    }
+
+    return array_unique($category_name);
+}
+
 
 function get_data_by_key($data, $key)
 {
@@ -96,6 +107,40 @@ function get_all_tasks()
 
 add_action('admin_init', 'get_all_tasks');
 
+function categories_cell($all_category, $key)
+{
+    $all_category = array_values(array_unique($all_category));
+    // Check if the key exists in the array
+    if (isset($all_category[$key])) {
+        $category = $all_category[$key];
+        $count = get_categories_count($category);
+        $url = admin_url('admin.php?page=single-design&category_template=' . urlencode($category));
+        // Create the HTML for the category cell at the specified position
+        $cell = <<<HEREDOC
+<div class="col-xl-3 col-md-6 mb-4">
+    <div class="card border-left-primary shadow h-100 py-2">
+        <a href="$url">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-lg font-weight-bold text-uppercase mb-1">$category</div>
+                    </div>
+                    <div class="col-auto">
+                        <h3 class="text-primary categories-count">$count</h3>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+HEREDOC;
+        return $cell;
+    } else {
+        // Handle the case where the key does not exist in the array
+        return '';
+    }
+}
+
 // function category_template_query_var($vars) {
 //     $vars[] = 'category_template';
 //     return $vars;
@@ -113,3 +158,76 @@ add_action('admin_init', 'get_all_tasks');
 //     return $template;
 // }
 // add_filter('template_include', 'category_template');
+
+
+
+function get_review_content($option_name)
+{
+    $options = get_option($option_name);
+
+    if (!$options) return []; // If the option doesn't exist or has no values
+
+    $content = [];
+
+    foreach ($options as $key => $option) {
+        switch ($key) {
+            case 'pass':
+                $content[$key] = '<div class="col-xl-3 col-md-6 mb-4">
+                                    <div class="card border-left-success shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col mr-2">
+                                                    <div class="text-lg font-weight-bold text-uppercase mb-1">Pass</div>
+                                                </div>
+                                                <div class="col-auto">
+                                                <h3 class="text-success pass-count">' . $option . '</h3>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>';
+                break;
+
+            case 'pending':
+                $content[$key] = '<div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-lg font-weight-bold text-uppercase mb-1">Pending</div>
+                            </div>
+                            <div class="col-auto">
+                                  <h3 class="text-warning pending-count">' . $option . '</h3>
+                              </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>';
+                break;
+
+            case 'fail':
+                $content[$key] = '<div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-danger shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-lg font-weight-bold text-uppercase mb-1">Fail</div>
+                            </div>
+                            <div class="col-auto">
+                                  <h3 class="text-danger fail-count">' . $option . '</h3>
+                              </div>
+                        </div>
+                    </div>
+                </div>
+            </div>';
+
+                break;
+
+            default:
+                continue;
+        }
+    }
+
+    return $content;
+}

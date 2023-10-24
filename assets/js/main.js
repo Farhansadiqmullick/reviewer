@@ -135,6 +135,20 @@
       }
     }
 
+    //select catergories on single dashboard
+    var selectElement = document.getElementById("single_page_category");
+
+    if (selectElement) {
+      selectElement.addEventListener("change", function () {
+        var selectedOption = selectElement.options[selectElement.selectedIndex];
+        var redirectURL = selectedOption.value;
+
+        if (redirectURL !== "0") {
+          window.location.href = redirectURL;
+        }
+      });
+    }
+
     //ajax button for submit for pass or fail for reviewer
     $(".single-dashboard-submit").click(function (e) {
       e.preventDefault();
@@ -204,5 +218,37 @@
     totalValueCount(".pass-count");
     totalValueCount(".pending-count");
     totalValueCount(".fail-count");
+
+    function setupMarksCounter(iconClassName, spanClassName) {
+      $(document).on("mouseover", iconClassName, function () {
+        // Change icons to pink in an ascending way on hover
+        $(this)
+          .addClass("icon-rectangle-pink")
+          .prevAll(iconClassName)
+          .addClass("icon-rectangle-pink");
+      });
+
+      $(document).on("mouseout", iconClassName, function () {
+        // Change icons to pink in an ascending way on hover
+        $(this)
+          .removeClass("icon-rectangle-pink")
+          .prevAll(".icon-rectangle-pink")
+          .addClass("icon-rectangle");
+      });
+
+      $(document).on("click", iconClassName, function () {
+        let pinkIconCount = 0;
+        // Count the pink icons only for the respective icons
+        pinkIconCount = $(this)
+          .siblings(".icon-rectangle-pink")
+          .addBack().length;
+
+        // Update the relevant <span> element with the count
+        $(spanClassName + ">span" + spanClassName).text(pinkIconCount);
+      });
+    }
+    setupMarksCounter(".relevant-design .icon-rectangle", ".relevant-design");
+    setupMarksCounter(".wearability .icon-rectangle", ".wearability");
+    setupMarksCounter(".aesthatics .icon-rectangle", ".aesthatics");
   });
 })(jQuery);

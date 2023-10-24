@@ -64,6 +64,7 @@ class DES_REVIEW
         wp_enqueue_script('jquery-min', '//code.jquery.com/jquery-3.6.0.min.js');
         wp_enqueue_script('popper-bootstrap', '//cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js', ['jquery'], '', true);
         wp_enqueue_script('bootstrap-min', '//cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js', ['jquery'], '', true);
+        wp_enqueue_script('iconify-icon', 'https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js', ['jquery'], '', true);
         wp_enqueue_script('jq-zoom', plugin_dir_url(__FILE__) . 'assets/js/jquery.jqZoom.js', ['jquery'], rand(111, 999), true);
         wp_enqueue_script('review-script', plugin_dir_url(__FILE__) . 'assets/js/main.js', ['jquery'], rand(111, 999), true);
         $data_to_localize = array(
@@ -132,6 +133,7 @@ PRIMARY KEY (id)
     public function review_menu()
     {
         add_menu_page('Design Review', 'Design Review', 'manage_options', 'review', [$this, 'review_options'], plugins_url('images/design.svg', __FILE__));
+        add_submenu_page('review', 'Settings', 'Settings', 'manage_options', 'settings', [$this, 'jury_option_settings']);
         add_submenu_page('review', 'Jury Worksheet', 'Jury Worksheet', 'jury_access', 'jury-worksheet', [$this, 'jury_worksheet_options']);
         add_submenu_page('review', 'Single Design', 'Single Design', 'jury_access', 'single-design', [$this, 'jury_single_design_options']);
     }
@@ -160,6 +162,11 @@ PRIMARY KEY (id)
     public function jury_single_design_options()
     {
         $this->include_files('inc/single-dashboard.php');
+    }    
+    
+    public function jury_option_settings()
+    {
+        $this->include_files('inc/settings.php');
     }
 }
 
