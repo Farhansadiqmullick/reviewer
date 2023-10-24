@@ -71,7 +71,7 @@ class DES_REVIEW
             'ajaxurl' => admin_url("admin-ajax.php"),
             'nonce'   => wp_create_nonce('review'),
         );
-        $localize_names = array('formurl', 'keyurl', 'reviewstatus', 'totalcategory');
+        $localize_names = array('formurl', 'keyurl', 'reviewstatus', 'totalcategory', 'juryassign', 'jurymarks');
 
         foreach ($localize_names as $variable_name) {
             wp_localize_script('review-script', $variable_name, $data_to_localize);

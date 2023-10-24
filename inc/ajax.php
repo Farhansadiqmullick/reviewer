@@ -163,3 +163,63 @@ function total_review_value_callback()
     }
     wp_die();
 }
+
+
+add_action('wp_ajax_save_jury_options', 'save_jury_options');
+
+function save_jury_options()
+{
+    if (isset($_POST['nonce'])) {
+        if (!wp_verify_nonce($_POST['nonce'], 'review')) {
+            wp_send_json_error(['error' => 'Unauthorized Access']);
+        }
+    }
+
+    if (current_user_can('manage_options')) {
+        $options = isset($_POST['options']) ? $_POST['options'] : array();
+
+        update_option('jury_assign_roles', $options);
+
+        wp_send_json_success(['data' => $options, 'message' => 'Options saved successfully']);
+    } else {
+        wp_send_json_error('You do not have permission to save options');
+    }
+}
+
+add_action('wp_ajax_submit_jury_marks', 'submit_jury_marks');
+
+function submit_jury_marks() {
+
+    if (isset($_POST['nonce'])) {
+        if (!wp_verify_nonce($_POST['nonce'], 'review')) {
+            wp_send_json_error(['error' => 'Unauthorized Access']);
+        }
+    }
+        $juryUserId = isset($_POST['juryUserId']) ? intval($_POST['juryUserId']) : 0;
+        $dataId = isset($_POST['dataId']) ? intval($_POST['dataId']) : 0;
+        $averageMarks = isset($_POST['averageMarks']) ? sanitize_text_field($_POST['averageMarks']) : '';
+
+        // Match the Jury User ID with get_option('jury_assign_roles') values
+        $roles = get_option('jury_assign_roles', array());
+        $matchedRole = array_search($juryUserId, $roles);
+
+        if ($matchedRole) {
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'review';
+
+            // Update the database with the average marks for the matched role
+            $wpdb->update(
+                $table_name,
+                array($matchedRole => $averageMarks),
+                array('id' => $dataId),
+                array('%s'),
+                array('%d')
+            );
+
+            wp_send_json_success('Data submitted successfully');
+        } else {
+            wp_send_json_error('Jury User ID not found in roles');
+        }
+        wp_die();
+}
+

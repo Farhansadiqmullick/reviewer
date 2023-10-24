@@ -1,7 +1,15 @@
 <?php
 global $wpdb;
 $tablename = $wpdb->prefix . 'review';
-$results = $wpdb->get_results("SELECT `category` FROM {$tablename} ORDER BY id DESC", ARRAY_A);
+$current_user = wp_get_current_user();
+if (in_array('jury', $current_user->roles)) {
+    $results = $wpdb->get_results("SELECT `category` FROM {$tablename} WHERE `review` = 'pass' ORDER BY `id` DESC", ARRAY_A);
+} elseif (in_array('reviewer', $current_user->roles)) {
+    $results = $wpdb->get_results("SELECT `category` FROM {$tablename} ORDER BY id DESC", ARRAY_A);
+} elseif (in_array('administrator', $current_user->roles)) {
+    $results = $wpdb->get_results("SELECT `category` FROM {$tablename} ORDER BY id DESC", ARRAY_A);
+}
+
 $categories = [];
 $category_count = '';
 if ($results) {
@@ -215,12 +223,12 @@ if ($results) {
                 </div>
                 <div class="row dashboard-boxes-row">
                     <?php echo categories_cell($categories, 1);
-                    
+
                     $statement_piece_option = get_review_content('statement-piece_option');
                     echo wp_kses($statement_piece_option['pass'], 'post');
                     echo wp_kses($statement_piece_option['pending'], 'post');
                     echo wp_kses($statement_piece_option['fail'], 'post');
-                    
+
                     ?>
                     <!-- <div class="col-xl-3 col-md-6 mb-4">
                         <div class="card border-left-success shadow h-100 py-2">

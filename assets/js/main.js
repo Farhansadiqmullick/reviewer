@@ -250,5 +250,83 @@
     setupMarksCounter(".relevant-design .icon-rectangle", ".relevant-design");
     setupMarksCounter(".wearability .icon-rectangle", ".wearability");
     setupMarksCounter(".aesthatics .icon-rectangle", ".aesthatics");
+
+    function getTotalMarks() {
+      const relevantDesign =
+        parseInt($("div.relevant-design span").text()) || 0;
+      const wearability = parseInt($("div.wearability span").text()) || 0;
+      const aesthatics = parseInt($("div.aesthatics span").text()) || 0;
+      if (relevantDesign && wearability && aesthatics) {
+        const getTotal = (relevantDesign + wearability + aesthatics) / 3;
+        $(".jury-average-marks").html(getTotal.toFixed(2));
+      }
+    }
+    $(document).on("click", $(".aesthatics .icon-rectangle"), function () {
+      getTotalMarks();
+    });
+
+    //function for jury assign roles
+
+    $("#save-options").click(function (e) {
+      e.preventDefault();
+      // Collect selected options
+      var options = {};
+      $('select[name^="jury"]').each(function () {
+        var name = $(this).attr("name");
+        var value = $(this).val();
+        options[name] = value;
+      });
+
+      // Send the selected options to the server using AJAX
+      $.ajax({
+        type: "POST",
+        url: juryassign.ajaxurl, // Replace with the actual URL
+        data: {
+          action: "save_jury_options",
+          options: options,
+          nonce: juryassign.nonce,
+        },
+        success: function (response) {
+          console.log(response);
+          console.log("Options saved successfully");
+          // You can display a success message or update the page as needed
+        },
+        error: function (error) {
+          console.error("Error saving options: " + error);
+        },
+      });
+    });
+
+    //Jury Submitted Marks
+    $(".single-jury-submit").click(function (e) {
+      e.preventDefault();
+
+      // Get data from the HTML elements
+      var juryUserId = $(".segment").data("juryuserid");
+      var dataId = $(".segment").data("id");
+      var averageMarks = $(".jury-average-marks").text();
+
+      // Prepare the data to send via AJAX
+      var dataToSend = {
+        action: "submit_jury_marks",
+        juryUserId: juryUserId,
+        dataId: dataId,
+        averageMarks: averageMarks,
+        nonce: jurymarks.nonce
+      };
+
+      // Send the data to the server using AJAX
+      $.ajax({
+        type: "POST",
+        url: jurymarks.ajaxurl, // Replace with the actual URL
+        data: dataToSend,
+        success: function (response) {
+          console.log(response);
+        },
+        error: function (error) {
+          console.error("Error submitting data: " + error);
+        },
+      });
+    });
   });
 })(jQuery);
