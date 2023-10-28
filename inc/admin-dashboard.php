@@ -4,9 +4,11 @@ $tablename = $wpdb->prefix . 'review';
 $current_user = wp_get_current_user();
 if (in_array('jury', $current_user->roles)) {
     $results = $wpdb->get_results("SELECT `category` FROM {$tablename} WHERE `review` = 'pass' ORDER BY `id` DESC", ARRAY_A);
-} elseif (in_array('reviewer', $current_user->roles)) {
+}
+if (in_array('reviewer', $current_user->roles)) {
     $results = $wpdb->get_results("SELECT `category` FROM {$tablename} ORDER BY id DESC", ARRAY_A);
-} elseif (in_array('administrator', $current_user->roles)) {
+}
+if (in_array('administrator', $current_user->roles)) {
     $results = $wpdb->get_results("SELECT `category` FROM {$tablename} ORDER BY id DESC", ARRAY_A);
 }
 
@@ -346,7 +348,51 @@ if ($results) {
                         <a class='btn btn-primary' data-fancybox="" href='https://www.igi.org//assets/expressions-admin/video/ReviewerProcessVideo.mp4'>Process Video</a>
                     </div> -->
                 </div>
-
+                <?php
+                if (current_user_can('manage_options')) :
+                    global $wpdb;
+                    $query = $wpdb->prepare(
+                        "SELECT id, name, email, phone, country, category, description, file, segment, segment, jury1, jury2, jury3, jury4, jury5, review
+                        FROM {$tablename}
+                        ORDER BY id DESC",
+                        ARRAY_A
+                    );
+                    $values = $wpdb->get_results($query, ARRAY_A);
+                    if ($wpdb->last_error) {
+                        echo 'wpdb error: ' . $wpdb->last_error;
+                        return '';
+                    }
+                    if ($values) :
+                        $first_row = reset($values);
+                        $table_headers = array_keys($first_row);
+                ?>
+                        <div class="my-4 mx-0">
+                            <table id="admin-table" class="table table-responsive table-striped">
+                                <thead>
+                                    <tr>
+                                        <?php foreach ($table_headers as $header) : ?>
+                                            <th><?php echo esc_html($header); ?></th>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($values as $row) : ?>
+                                        <tr>
+                                            <?php foreach ($row as $key => $cell) :
+                                                if ($key == 'id') :
+                                            ?>
+                                                    <td><a target="_blank" href="<?php echo admin_url('admin.php?page=single-design&category_template=' . urlencode($row['category']) . '&id=' . $cell); ?>"><?php echo esc_html($cell); ?></td>
+                                                <?php else : ?>
+                                                    <td><?php echo esc_html($cell); ?></td>
+                                                <?php endif; ?>
+                                            <?php endforeach; ?>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endif; ?>
+                <?php endif; ?>
             </div><!--container-fluid--->
 
         </div>

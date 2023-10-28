@@ -57,6 +57,8 @@ class DES_REVIEW
             wp_enqueue_style('font-awersome-min', plugin_dir_url(__FILE__) . 'assets/css/all.min.css', null, '', 'all');
             wp_enqueue_style('datatables-bootstrap-min', plugin_dir_url(__FILE__) . 'assets/css/dataTables-bootstrap.min.css', null, '', 'all');
             wp_enqueue_style('jq-zoom', plugin_dir_url(__FILE__) . 'assets/css/jquery.jqZoom.css', null, '', 'all');
+            wp_enqueue_style('datatable', '//cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css', null, '', 'all');
+            wp_enqueue_style('buttons-datatable', 'https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css', null, '', 'all');
             wp_enqueue_style('custom', plugin_dir_url(__FILE__) . 'assets/css/custom.css', null, '', 'all');
             wp_enqueue_style('review-style', plugin_dir_url(__FILE__) . 'assets/css/style.css', null, rand(111, 999), 'all');
         }
@@ -65,6 +67,12 @@ class DES_REVIEW
         wp_enqueue_script('popper-bootstrap', '//cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js', ['jquery'], '', true);
         wp_enqueue_script('bootstrap-min', '//cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js', ['jquery'], '', true);
         wp_enqueue_script('iconify-icon', 'https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js', ['jquery'], '', true);
+        wp_enqueue_script('datatable', '//cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js', ['jquery'], '', true);
+        wp_enqueue_script('datatable-button', 'https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js', ['jquery'], '', true);
+        wp_enqueue_script('jsZip', 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js', ['jquery'], '', true);
+        wp_enqueue_script('pdfmake', 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js', ['jquery'], '', true);
+        wp_enqueue_script('pdf-vfs', 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js', ['jquery'], '', true);
+        wp_enqueue_script('button-html', 'https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js', ['jquery'], '', true);
         wp_enqueue_script('jq-zoom', plugin_dir_url(__FILE__) . 'assets/js/jquery.jqZoom.js', ['jquery'], rand(111, 999), true);
         wp_enqueue_script('review-script', plugin_dir_url(__FILE__) . 'assets/js/main.js', ['jquery'], rand(111, 999), true);
         $data_to_localize = array(
@@ -162,8 +170,8 @@ PRIMARY KEY (id)
     public function jury_single_design_options()
     {
         $this->include_files('inc/single-dashboard.php');
-    }    
-    
+    }
+
     public function jury_option_settings()
     {
         $this->include_files('inc/settings.php');

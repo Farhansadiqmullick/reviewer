@@ -4,11 +4,12 @@ $query = $wpdb->prepare("SELECT * FROM {$tablename} WHERE category = %s", $categ
 
 // Use get_results to retrieve multiple rows
 $results = $wpdb->get_results($query);
+// var_dump($results);
 // Check for errors
 if ($wpdb->last_error) {
     echo "Database error: " . $wpdb->last_error;
 } else {
-    $key_value = get_option('key_value') ? get_option('key_value') : 0;
+    $key_value = count($results) - 1;
     $total = absint(count($results));
     if (isset($results[$key_value])) {
         $result = get_data_by_key($results, $key_value);

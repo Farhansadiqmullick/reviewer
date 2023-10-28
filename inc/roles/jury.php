@@ -1,7 +1,4 @@
 <?php
-
-$user_id = wp_get_current_user()->id;
-$tablename = $wpdb->prefix . 'review';
 // Use prepare to avoid SQL injection
 $query = $wpdb->prepare("SELECT * FROM {$tablename} WHERE category = %s AND `review` LIKE 'pass'", $category_name);
 

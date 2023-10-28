@@ -56,6 +56,11 @@ function get_data_by_key($data, $key)
         'category' => '',
         'description' => '',
         'review' => '',
+        'jury1' => '',
+        'jury2' => '',
+        'jury3' => '',
+        'jury4' => '',
+        'jury5' => '',
     ];
 
     if (isset($data[$key])) {
@@ -66,7 +71,12 @@ function get_data_by_key($data, $key)
             'segment' => $data[$key]->segment,
             'category' => $data[$key]->category,
             'review' => $data[$key]->review,
-            'description' => $data[$key]->description
+            'description' => $data[$key]->description,
+            'jury1' => $data[$key]->jury1,
+            'jury2' => $data[$key]->jury2,
+            'jury3' => $data[$key]->jury3,
+            'jury4' => $data[$key]->jury4,
+            'jury5' => $data[$key]->jury5
         ];
     }
 
@@ -105,7 +115,58 @@ function get_all_tasks()
     }
 }
 
+//jury Tasks
+function update_jury_tasks_status()
+{
+    global $wpdb;
+
+    // Define your table name
+    $tablename = $wpdb->prefix . 'review';
+
+    // Get distinct categories from the table
+    $categories = $wpdb->get_col("SELECT DISTINCT `category` FROM {$tablename}");
+
+    foreach ($categories as $category) {
+
+        $current_user = wp_get_current_user();
+        if (in_array('jury', $current_user->roles)) {
+            $user_id = $current_user->ID; // Get the current user's ID
+            $roles = get_option('jury_assign_roles', array());
+            if (in_array($user_id, $roles)) {
+                $name = array_search($user_id, $roles);
+                // Count 'submit' and 'pending' reviews for the current category and jury
+                $sql = $wpdb->prepare(
+                    "SELECT COUNT(*) FROM {$tablename} WHERE `category` = %s AND `review` = 'pass' AND `%s` = IS NOT NULL",
+                    $category,
+                    $name
+                );
+
+                // echo "SQL Query: $sql<br>"; // Print the SQL query for debugging purposes
+
+                $submit_count = (int) $wpdb->get_var($sql);
+
+                // echo "Submit Count: $submit_count<br>"; // Print the result for debugging purposes
+                $pending_count = (int) $wpdb->get_var($wpdb->prepare(
+                    "SELECT COUNT(*) FROM {$tablename} WHERE `category` = %s AND `review` = 'pass' AND `%s` IS NULL",
+                    $category,
+                    $name
+                ));
+                if ($wpdb->last_error) {
+                    error_log(print_r($wpdb->last_error));
+                    return '';
+                }
+                // Update the WordPress option for the current category
+                update_option(strtolower(str_replace(' ', '_', $category . '-' . $name)) . "_value_option", array(
+                    'submit' => $submit_count,
+                    'pending' => $pending_count
+                ));
+            }
+        }
+    }
+}
+
 add_action('admin_init', 'get_all_tasks');
+add_action('admin_init', 'update_jury_tasks_status');
 
 function categories_cell($all_category, $key)
 {
@@ -114,7 +175,7 @@ function categories_cell($all_category, $key)
     if (isset($all_category[$key])) {
         $category = $all_category[$key];
         $count = get_categories_count($category);
-        $url = admin_url('admin.php?page=single-design&category_template=' . urlencode($category));
+        $url = current_user_can('manage_options') ? '#' : esc_url(admin_url('admin.php?page=single-design&category_template=' . urlencode($category)));
         // Create the HTML for the category cell at the specified position
         $cell = <<<HEREDOC
 <div class="col-xl-3 col-md-6 mb-4">
@@ -225,7 +286,7 @@ function get_review_content($option_name)
                 break;
 
             default:
-                continue;
+                return;
         }
     }
 

@@ -179,8 +179,7 @@
         },
         success: function (response) {
           if (response.success) {
-            // Update the UI to show that the review status has been updated
-            // ...
+            alert('Review has been submitted successfully');
           }
         },
       });
@@ -312,7 +311,7 @@
         juryUserId: juryUserId,
         dataId: dataId,
         averageMarks: averageMarks,
-        nonce: jurymarks.nonce
+        nonce: jurymarks.nonce,
       };
 
       // Send the data to the server using AJAX
@@ -322,11 +321,26 @@
         data: dataToSend,
         success: function (response) {
           console.log(response);
+          alert("Marks has been counted successfully");
         },
         error: function (error) {
           console.error("Error submitting data: " + error);
         },
       });
     });
+
+    //dataTable
+
+    var table = $("#admin-table");
+    table.DataTable( {
+      dom: 'Bfrtip',
+      fixedHeader: {
+        header: true
+      },
+      pagingType: 'numbers',
+      buttons: [
+          'copy', 'csv', 'excel', 'pdf'
+      ]
+  } );
   });
 })(jQuery);

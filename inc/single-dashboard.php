@@ -3,6 +3,7 @@ global $wpdb;
 $tablename = $wpdb->prefix . 'review';
 
 $category_name = $_GET['category_template']; // Get the category name from the URL parameter
+$id = $_GET['id'];
 
 if (empty($category_name)) {
     $categories = get_unique_categories();

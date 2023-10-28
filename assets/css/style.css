@@ -59,3 +59,14 @@
 .icon-rectangle:hover::before {
   content: url("https://api.iconify.design/icon-park-twotone/rectangle.svg?color=%23c74374&width=32&height=32");
 }
+
+/* dataTable */
+div.dataTables_wrapper div.dataTables_length select {
+  padding: 5px 12px;
+}
+
+/* Row content */
+.row.dashboard-boxes-row{
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
