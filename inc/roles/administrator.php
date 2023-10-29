@@ -17,7 +17,6 @@ if ($wpdb->last_error) {
 }
 
 if ($value) :
-    var_dump($value);
 ?>
 
     <div class="single-design mb-4">
@@ -114,6 +113,10 @@ if ($value) :
             </div>
         </div>
     </div>
+<?php
+else :
+?>
+    <h3 class='text center my-4'>Please get back to the Jury Page. This page needs for Reviewer <a class='btn btn-primary my-2 mx-4' href="<?php echo admin_url('admin.php?page=jury-worksheet'); ?>">Jury Worksheet</a></h3>
 <?php
 endif;
 ?>

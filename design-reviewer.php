@@ -38,7 +38,6 @@ class DES_REVIEW
     {
         load_plugin_textdomain('review_languages', false, plugin_dir_path(__FILE__) . '/languages');
         $this->include_files('inc/ajax.php');
-        $this->include_files('inc/data.php');
         $this->include_files('helpers.php');
         $this->include_files('public/frontend.php');
         $this->include_files('inc/functions.php');
@@ -53,36 +52,39 @@ class DES_REVIEW
             'design-review_page_single-design', 'toplevel_page_review', 'design-review_page_jury-worksheet',
         ];
 
+        wp_enqueue_script('jquery-min', '//code.jquery.com/jquery-3.6.0.min.js');
+        wp_enqueue_script('popper-bootstrap', '//cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js', ['jquery'], '', true);
+        wp_enqueue_script('bootstrap-min', '//cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js', ['jquery'], '', true);
+
+
         if (in_array($hooks, $plugin_pages)) {
-            wp_enqueue_style('font-awersome-min', plugin_dir_url(__FILE__) . 'assets/css/all.min.css', null, '', 'all');
+            wp_enqueue_style('font-awesome-min', plugin_dir_url(__FILE__) . 'assets/css/all.min.css', null, '', 'all');
             wp_enqueue_style('datatables-bootstrap-min', plugin_dir_url(__FILE__) . 'assets/css/dataTables-bootstrap.min.css', null, '', 'all');
-            wp_enqueue_style('jq-zoom', plugin_dir_url(__FILE__) . 'assets/css/jquery.jqZoom.css', null, '', 'all');
+            wp_enqueue_style('jq-zoom', plugin_dir_url(__FILE__) . 'assets/css/jquery.jqZoom.css', null, rand(111, 999), 'all');
             wp_enqueue_style('datatable', '//cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css', null, '', 'all');
             wp_enqueue_style('buttons-datatable', 'https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css', null, '', 'all');
             wp_enqueue_style('custom', plugin_dir_url(__FILE__) . 'assets/css/custom.css', null, '', 'all');
             wp_enqueue_style('review-style', plugin_dir_url(__FILE__) . 'assets/css/style.css', null, rand(111, 999), 'all');
-        }
-        // wp_enqueue_script('jquery-slim', '//code.jquery.com/jquery-3.3.1.slim.min.js');
-        wp_enqueue_script('jquery-min', '//code.jquery.com/jquery-3.6.0.min.js');
-        wp_enqueue_script('popper-bootstrap', '//cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js', ['jquery'], '', true);
-        wp_enqueue_script('bootstrap-min', '//cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js', ['jquery'], '', true);
-        wp_enqueue_script('iconify-icon', 'https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js', ['jquery'], '', true);
-        wp_enqueue_script('datatable', '//cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js', ['jquery'], '', true);
-        wp_enqueue_script('datatable-button', 'https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js', ['jquery'], '', true);
-        wp_enqueue_script('jsZip', 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js', ['jquery'], '', true);
-        wp_enqueue_script('pdfmake', 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js', ['jquery'], '', true);
-        wp_enqueue_script('pdf-vfs', 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js', ['jquery'], '', true);
-        wp_enqueue_script('button-html', 'https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js', ['jquery'], '', true);
-        wp_enqueue_script('jq-zoom', plugin_dir_url(__FILE__) . 'assets/js/jquery.jqZoom.js', ['jquery'], rand(111, 999), true);
-        wp_enqueue_script('review-script', plugin_dir_url(__FILE__) . 'assets/js/main.js', ['jquery'], rand(111, 999), true);
-        $data_to_localize = array(
-            'ajaxurl' => admin_url("admin-ajax.php"),
-            'nonce'   => wp_create_nonce('review'),
-        );
-        $localize_names = array('formurl', 'keyurl', 'reviewstatus', 'totalcategory', 'juryassign', 'jurymarks');
 
-        foreach ($localize_names as $variable_name) {
-            wp_localize_script('review-script', $variable_name, $data_to_localize);
+            // wp_enqueue_script('jquery-slim', '//code.jquery.com/jquery-3.3.1.slim.min.js');
+            wp_enqueue_script('iconify-icon', 'https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js', ['jquery'], '', true);
+            wp_enqueue_script('datatable', '//cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js', ['jquery'], '', true);
+            wp_enqueue_script('datatable-button', 'https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js', ['jquery'], '', true);
+            wp_enqueue_script('jsZip', 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js', ['jquery'], '', true);
+            wp_enqueue_script('pdfmake', 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js', ['jquery'], '', true);
+            wp_enqueue_script('pdf-vfs', 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js', ['jquery'], '', true);
+            wp_enqueue_script('button-html', 'https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js', ['jquery'], '', true);
+            wp_enqueue_script('jq-zoom', plugin_dir_url(__FILE__) . 'assets/js/jquery.jqZoom.js', ['jquery'], rand(111, 999), true);
+            wp_enqueue_script('review-script', plugin_dir_url(__FILE__) . 'assets/js/main.js', ['jquery'], rand(111, 999), true);
+            $data_to_localize = array(
+                'ajaxurl' => admin_url("admin-ajax.php"),
+                'nonce'   => wp_create_nonce('review'),
+            );
+            $localize_names = array('formurl', 'keyurl', 'keyjuryurl', 'reviewstatus', 'totalcategory', 'juryassign', 'jurymarks', 'logout');
+
+            foreach ($localize_names as $variable_name) {
+                wp_localize_script('review-script', $variable_name, $data_to_localize);
+            }
         }
     }
 
@@ -163,7 +165,6 @@ PRIMARY KEY (id)
     public function jury_worksheet_options()
     {
         $this->current_user = wp_get_current_user();
-        echo '<h3>User Login as: ' . ucwords($this->current_user->roles[0]) . '</h3>';
         $this->include_files('inc/admin-dashboard.php');
     }
 

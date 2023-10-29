@@ -135,28 +135,38 @@ function update_jury_tasks_status()
             if (in_array($user_id, $roles)) {
                 $name = array_search($user_id, $roles);
                 // Count 'submit' and 'pending' reviews for the current category and jury
-                $sql = $wpdb->prepare(
-                    "SELECT COUNT(*) FROM {$tablename} WHERE `category` = %s AND `review` = 'pass' AND `%s` = IS NOT NULL",
-                    $category,
-                    $name
+                $id_query = $wpdb->prepare(
+                    "SELECT `id` FROM {$tablename} WHERE `category` = %s AND `review` = 'pass'",
+                    $category
                 );
 
-                // echo "SQL Query: $sql<br>"; // Print the SQL query for debugging purposes
+                $ids = $wpdb->get_results($id_query); // Get an array of IDs
 
-                $submit_count = (int) $wpdb->get_var($sql);
+                $submit_count = 0; // Initialize submit count
+                $pending_count = 0;
 
-                // echo "Submit Count: $submit_count<br>"; // Print the result for debugging purposes
-                $pending_count = (int) $wpdb->get_var($wpdb->prepare(
-                    "SELECT COUNT(*) FROM {$tablename} WHERE `category` = %s AND `review` = 'pass' AND `%s` IS NULL",
-                    $category,
-                    $name
-                ));
+                foreach ($ids as $id) {
+                    $id_value = $id->id;
+
+                    // Check if the jury has given a value for the current ID
+                    $jury_value = $wpdb->get_var($wpdb->prepare(
+                        "SELECT {$name} FROM {$tablename} WHERE `id` = %d",
+                        $id_value
+                    ));
+
+                    if ($jury_value !== null) {
+                        $submit_count++;
+                    } else {
+                        // The column is null
+                        $pending_count++;
+                    }
+                }
                 if ($wpdb->last_error) {
                     error_log(print_r($wpdb->last_error));
                     return '';
                 }
                 // Update the WordPress option for the current category
-                update_option(strtolower(str_replace(' ', '_', $category . '-' . $name)) . "_value_option", array(
+                update_option(strtolower(str_replace([' ', '_'], '-', $category . '-' . $name)) . "-value-option", array(
                     'submit' => $submit_count,
                     'pending' => $pending_count
                 ));
@@ -201,26 +211,6 @@ HEREDOC;
         return '';
     }
 }
-
-// function category_template_query_var($vars) {
-//     $vars[] = 'category_template';
-//     return $vars;
-// }
-// add_filter('query_vars', 'category_template_query_var');
-
-// function category_template($template) {
-//     $category_template = get_query_var('category_template');
-//     foreach(get_all_design_category() as $category){
-//         if (isset($_GET['page']) && $_GET['page'] == 'jury-worksheet' && isset($_GET['category_template']) && ($category_template == $category['category'])) {
-//             $template = dirname(__DIR__) . '/templates/category-template.php';   
-//         }
-//     }
-
-//     return $template;
-// }
-// add_filter('template_include', 'category_template');
-
-
 
 function get_review_content($option_name)
 {
@@ -291,4 +281,71 @@ function get_review_content($option_name)
     }
 
     return $content;
+}
+
+function get_jury_review_content($option_name)
+{
+    $options = get_option($option_name);
+
+    if (!$options) return []; // If the option doesn't exist or has no values
+
+    $content = [];
+
+    foreach ($options as $key => $option) {
+        switch ($key) {
+            case 'submit':
+                $content[$key] = '<div class="col-xl-3 col-md-6 mb-4">
+                                    <div class="card border-left-success shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col mr-2">
+                                                    <div class="text-lg font-weight-bold text-uppercase mb-1">Submit</div>
+                                                </div>
+                                                <div class="col-auto">
+                                                <h3 class="text-success pass-count">' . $option . '</h3>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>';
+                break;
+
+            case 'pending':
+                $content[$key] = '<div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-lg font-weight-bold text-uppercase mb-1">Pending</div>
+                            </div>
+                            <div class="col-auto">
+                                  <h3 class="text-warning pending-count">' . $option . '</h3>
+                              </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>';
+                break;
+            default:
+                return;
+        }
+    }
+
+    return $content;
+}
+
+
+function get_jury_name()
+{
+    $current_user = wp_get_current_user();
+    $name = '';
+    if (in_array('jury', $current_user->roles)) {
+        $user_id = get_current_user_id();
+        $roles = get_option('jury_assign_roles', array());
+        if (in_array($user_id, $roles)) {
+            $name = array_search($user_id, $roles);
+        }
+    }
+    return $name;
 }

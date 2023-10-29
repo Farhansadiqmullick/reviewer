@@ -82,6 +82,7 @@ function document_upload_dir($default_dir_data)
 }
 
 add_action('wp_ajax_key_change', 'handle_change_key');
+add_action('wp_ajax_key_jury_change', 'handle_jury_change_key');
 
 function handle_change_key()
 {
@@ -113,6 +114,42 @@ function handle_change_key()
     }
 
     wp_send_json_success(['key' => $key_value, 'value' => $value]);
+
+    wp_die();
+}
+
+
+function handle_jury_change_key()
+{
+    if (isset($_POST['nonce'])) {
+        if (!wp_verify_nonce($_POST['nonce'], 'review')) {
+            wp_send_json_error(['error' => 'Unauthorized Access']);
+        }
+    }
+
+    if (!isset($_POST['key'])) {
+        return;
+    } else {
+        update_option('key_value', $_POST['key']);
+    }
+    global $wpdb;
+    $tablename = $wpdb->prefix . 'review';
+
+    $category_name = isset($_POST['category']) ? $_POST['category'] : '';
+    $review_type = isset($_POST['reviewType']) ? $_POST['reviewType'] : '';
+    // Use prepare to avoid SQL injection
+    $query = $wpdb->prepare("SELECT * FROM {$tablename} WHERE category = %s AND review = %s", $category_name, $review_type);
+    $results = $wpdb->get_results($query);
+    // Check for errors
+    if ($wpdb->last_error) {
+        wp_send_json_error("Database error: " . $wpdb->last_error);
+    } else {
+        $key_value = isset($_POST['key']) ? absint($_POST['key']) : 0;
+        $result = get_data_by_key($results, $key_value);
+        $value = isset($result) && !empty($result) ? $result : [];
+    }
+
+    wp_send_json_success(['key' => $key_value, 'value' => $value, 'category' => $category_name, 'review' => $review_type]);
 
     wp_die();
 }
@@ -188,38 +225,63 @@ function save_jury_options()
 
 add_action('wp_ajax_submit_jury_marks', 'submit_jury_marks');
 
-function submit_jury_marks() {
+function submit_jury_marks()
+{
 
     if (isset($_POST['nonce'])) {
         if (!wp_verify_nonce($_POST['nonce'], 'review')) {
             wp_send_json_error(['error' => 'Unauthorized Access']);
         }
     }
-        $juryUserId = isset($_POST['juryUserId']) ? intval($_POST['juryUserId']) : 0;
-        $dataId = isset($_POST['dataId']) ? intval($_POST['dataId']) : 0;
-        $averageMarks = isset($_POST['averageMarks']) ? sanitize_text_field($_POST['averageMarks']) : '';
+    $juryUserId = isset($_POST['juryUserId']) ? intval($_POST['juryUserId']) : 0;
+    $dataId = isset($_POST['dataId']) ? intval($_POST['dataId']) : 0;
+    $averageMarks = isset($_POST['averageMarks']) ? sanitize_text_field($_POST['averageMarks']) : '';
 
-        // Match the Jury User ID with get_option('jury_assign_roles') values
-        $roles = get_option('jury_assign_roles', array());
-        $matchedRole = array_search($juryUserId, $roles);
+    // Match the Jury User ID with get_option('jury_assign_roles') values
+    $roles = get_option('jury_assign_roles', array());
+    $matchedRole = array_search($juryUserId, $roles);
 
-        if ($matchedRole) {
-            global $wpdb;
-            $table_name = $wpdb->prefix . 'review';
+    if ($matchedRole) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'review';
 
-            // Update the database with the average marks for the matched role
-            $wpdb->update(
-                $table_name,
-                array($matchedRole => $averageMarks),
-                array('id' => $dataId),
-                array('%s'),
-                array('%d')
-            );
-
-            wp_send_json_success('Data submitted successfully');
-        } else {
-            wp_send_json_error('Jury User ID not found in roles');
+        // Update the database with the average marks for the matched role
+        $wpdb->update(
+            $table_name,
+            array($matchedRole => $averageMarks),
+            array('id' => $dataId),
+            array('%s'),
+            array('%d')
+        );
+        if ($wpdb->last_error) {
+            // Handle the error, e.g., log it or display a message
+            echo "Error: " . $wpdb->last_error;
+            error_log(print_r($wpdb->last_error));
         }
-        wp_die();
+
+        wp_send_json_success([
+            'name' => $matchedRole,
+            'number' => $averageMarks,
+            'id' => $dataId
+        ]);
+    } else {
+        wp_send_json_error('Jury User ID not found in roles');
+    }
+    wp_die();
 }
 
+//custom logout
+add_action('wp_ajax_custom_logout', 'custom_logout');
+
+function custom_logout()
+{
+    if (isset($_POST['nonce'])) {
+        if (!wp_verify_nonce($_POST['nonce'], 'review')) {
+            wp_send_json_error(['error' => 'Unauthorized Access']);
+        }
+    }
+    wp_logout();
+    echo json_encode(array('status' => 'success'));
+    wp_redirect(home_url('/wp-admin'));
+    wp_die();
+}

@@ -6,7 +6,7 @@
 }
 .zoom-box .zoom-selector{
     position: absolute;
-    background-image: url("images/selector.png");
+    background-image: url("/images/design.svg");
     background-repeat: repeat;
     display: none;
     cursor: crosshair;

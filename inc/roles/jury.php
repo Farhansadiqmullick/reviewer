@@ -5,6 +5,7 @@ $query = $wpdb->prepare("SELECT * FROM {$tablename} WHERE category = %s AND `rev
 if ($query) {
     // Use get_results to retrieve multiple rows
     $results = $wpdb->get_results($query);
+    // var_dump($results);
     // Check for errors
     if ($wpdb->last_error) {
         echo "Database error: " . $wpdb->last_error;
@@ -29,6 +30,8 @@ if ($query) {
     }
 
     if ($value) :
+        $name = get_jury_name();
+        $user_id = get_current_user_id();
 ?>
 
         <div class="single-design mb-4">
@@ -42,8 +45,8 @@ if ($query) {
                     printf('<h6>Items <span class="review-key">%s</span>/<span>%s</span></h6>', $key_value, $total);
                     ?>
                     <div class="d-flex flex-row m-2">
-                        <button class="prev btn btn-secondary" data-category="<?php echo $category_name; ?>" data-key=<?php echo $key_value; ?> data-count="0">Prev</button>
-                        <button class="next btn btn-primary" data-category="<?php echo $category_name; ?>" data-key=<?php echo $key_value; ?> data-count="<?php echo $total; ?>">Next</button>
+                        <button class="prev-jury btn btn-secondary" data-category="<?php echo $category_name; ?>" data-key=<?php echo $key_value; ?> data-count="0">Prev</button>
+                        <button class="next-jury btn btn-primary" data-category="<?php echo $category_name; ?>" data-key=<?php echo $key_value; ?> data-count="<?php echo $total; ?>">Next</button>
                     </div>
                 </div>
                 <div class="d-flex flex-column flex-md-row justify-content-between">
@@ -60,11 +63,19 @@ if ($query) {
                     <div class="d-flex flex-column align-items-start bg-white shadow p-3 mb-5 rounded h-auto" style="min-width: 650px; width: auto;">
                         <h5 style="color:#BE768A">Submission Details</h5>
                         <div class="d-flex flex-column flex-md-row w-100 align-items-start">
-                            <div class="w-50">
+                            <div class="w-25">
+                                <?php
+                                if ($value['id']) {
+                                    echo '<span>ID</span>';
+                                    printf('<p class="entry-id">%s</p>', absint($value['id']));
+                                }
+                                ?>
+                            </div>
+                            <div class="w-25">
                                 <?php
                                 if ($value['segment']) {
                                     echo '<span>Segement</span>';
-                                    printf('<p class="segment" data-juryuserid="%s" data-id=%s>%s</p>', absint($user_id), absint($value['id']), esc_html($value['segment']));
+                                    printf('<p class="segment" data-juryuserid="%s">%s</p>', absint($user_id), esc_html($value['segment']));
                                 }
                                 ?>
 
@@ -86,9 +97,14 @@ if ($query) {
                             printf('<p class="description">%s</p>', $value['description']);
                             echo '</div>';
                         }
+
+                        if ((isset($value[$name]))) {
+                            printf('<h6>Marks Submitted: <span class="jury-total-marks" data-name=%s data-juryvalue=%s>%s</span></h6>', array_search($value[$name], $value), esc_attr($value[$name]), esc_attr($value[$name]));
+                        }
+
                         ?>
 
-                        <div class="d-flex flex-row flex-wrap m-2">
+                        <div class="jury-marking d-flex flex-row flex-wrap m-2">
                             <div class="d-flex flex-column">
                                 <label for="relevant-design">Relevant design</label>
                                 <?php echo marks_icon(10, 'relevant-design'); ?>
@@ -102,7 +118,7 @@ if ($query) {
                                 <?php echo marks_icon(10, 'aesthatics'); ?>
                             </div>
                         </div>
-                        <div class="d-flex flex-column mt-2 mb-4 mx-0">
+                        <div class="jury-average d-flex flex-column mt-2 mb-4 mx-0">
                             <span>Total Average Marks</span>
                             <span class="jury-average-marks"></span>
                         </div>
@@ -112,8 +128,14 @@ if ($query) {
                 </div>
             </div>
         </div>
+    <?php
+    else :
+    ?>
+        <div class="text-center my-4 mx-auto">
+            <h5 class='text center my-4'>Please get back to the Jury Page. This page needs for Reviewer <a class='btn btn-primary my-2 mx-4' href="<?php echo admin_url('admin.php?page=jury-worksheet'); ?>">Jury Worksheet</a></h5>
+        </div>
+
 <?php
-    else : echo '<div class="text-center my-4 mx-auto"><h5>There has nothing to check, please go back to the Jury Main Page</h5></div>';
     endif;
 }
 ?>
