@@ -36,11 +36,14 @@
 
     //Load content
     var currentKey = $(".single-design").find("button.prev").data("key") - 1; // Initialize the current key starting from 0
-    var currentJuryKey = $(".single-design").find("button.prev-jury").data("key") - 1; // Initialize the current key starting from 0
+    var currentJuryKey =
+      $(".single-design").find("button.prev-jury").data("key") - 1; // Initialize the current key starting from 0
     var totalCount = $(".single-design").find("button.next").data("count") - 1; // Initialize totalCount starting from (totalCount - 1)
-    var totalJuryCount = $(".single-design").find("button.next-jury").data("count") - 1; // Initialize totalCount starting from (totalCount - 1)
+    var totalJuryCount =
+      $(".single-design").find("button.next-jury").data("count") - 1; // Initialize totalCount starting from (totalCount - 1)
     console.log("totalcount: " + totalCount);
     var content = $(".single-design h6 span.review-key");
+    var juryContent = $(".single-design h6 span.review-jury-key");
     function loadContent(key, category, count) {
       const data = {
         key: key,
@@ -57,7 +60,7 @@
           console.log(response);
           currentKey = response.data.key;
           var content = $(".single-design h6 span.review-key");
-          if (currentKey === 0) {
+          if (currentKey === 0 || currentKey == -1) {
             // Handle special case when currentKey is 0
             // Update the content key to start from 1, but keep currentKey as 0 for array access
             content.html(1);
@@ -103,16 +106,16 @@
         // Replace with the total count of $values
         loadContent(nextKey, category, totalCount);
       }
-    });    
+    });
     // Handle the "Next" for Jury
     $(".next-jury").click(function () {
       var nextKey = currentJuryKey + 1;
       var totalCount = parseInt($(this).data("count")) - 1;
       var category = $(this).data("category");
-      var review = 'pass';//as we Need only pass review
+      var review = "pass"; //as we Need only pass review
       if (nextKey <= totalCount) {
         // Replace with the total count of $values
-        loadContent(nextKey, category, totalCount, review);
+        loadJuryContent(nextKey, category, totalCount, review);
       }
     });
 
@@ -121,7 +124,7 @@
       var category = $(this).data("category");
       var totalCount = parseInt($(this).data("count")) - 1;
       if (prevKey >= 0) {
-        loadJuryContent(prevKey, category, totalCount);
+        loadContent(prevKey, category, totalCount);
       }
     });
 
@@ -129,20 +132,16 @@
       var prevKey = currentJuryKey - 1;
       var category = $(this).data("category");
       var totalJuryCount = parseInt($(this).data("count")) - 1;
-      var review = 'pass';//as we Need only pass review
+      var review = "pass"; //as we Need only pass review
       if (prevKey >= 0) {
         loadJuryContent(prevKey, category, totalJuryCount, review);
       }
     });
-
-    content.html(currentKey + 2);
-    content.html(currentJuryKey + 2);
     // Initially disable the "Prev" button if currentKey is 0
     $(".prev").prop("disabled", currentKey === 1);
     $(".prev-jury").prop("disabled", currentJuryKey === 1);
     $(".next").prop("disabled", currentKey === totalCount);
     $(".next-jury").prop("disabled", currentJuryKey === totalJuryCount);
-
 
     function loadJuryContent(key, category, totalJuryCount, reviewType) {
       const data = {
@@ -152,7 +151,7 @@
         category: category,
         reviewType: reviewType, // Add a parameter for review type
       };
-    
+
       $.ajax({
         url: keyjuryurl.ajaxurl,
         type: "POST",
@@ -160,15 +159,15 @@
         success: function (response) {
           // Update the current key after loading content
           currentJuryKey = response.data.key;
-          var content = $(".single-design h6 span.review-key");
-    
-          if (currentJuryKey === 0) {
-            content.html(1);
+          var juryContent = $(".single-design h6 span.review-jury-key");
+
+          if (currentJuryKey === 0 || currentJuryKey === -1) {
+            juryContent.html(1);
           } else {
             // For other keys, display them starting from 1
-            content.html(currentJuryKey + 1);
+            juryContent.html(currentJuryKey + 1);
           }
-    
+
           // Update other content as needed
           var title = $(".single-design h4.entry-content");
           var id = $(".single-design p.entry-id");
@@ -178,8 +177,10 @@
           var category = $(".single-design p.review-category");
           var review = $(".single-design .given-review");
           var juryMark = $(".single-design span.jury-total-marks");
-          var juryName = $(".single-design h6 span.jury-total-marks").attr("data-name");
-    
+          var juryName = $(".single-design h6 span.jury-total-marks").attr(
+            "data-name"
+          );
+
           title.html(response.data.value.title);
           id.html(response.data.value.id);
           description.html(response.data.value.description);
@@ -195,13 +196,13 @@
               $(".jury-average, .jury-marking, .single-jury-submit").show();
             }
           }
-    
+
           issueLinkOpen();
-    
+
           // Enable or disable Prev and Next buttons based on the currentKey
           $(".prev").prop("disabled", currentJuryKey === 0);
           $(".next").prop("disabled", currentJuryKey === totalJuryCount);
-    
+
           // Handle pagination for different queries (e.g., 'pass' vs. 'fail')
           $(".prev").data("review-type", reviewType);
           $(".next").data("review-type", reviewType);
@@ -212,7 +213,7 @@
         },
       });
     }
-    
+
     //fail button
     issueLinkOpen();
     function issueLinkOpen() {
@@ -233,7 +234,8 @@
         });
       }
     }
-
+    content.html(currentKey + 2);
+    juryContent.html(currentJuryKey + 2);
     //select catergories on single dashboard
     var selectElement = document.getElementById("single_page_category");
 
@@ -396,14 +398,13 @@
     });
 
     //jury marks on single page
-    function juryMarks(){
-
+    function juryMarks() {
       var juryMark = $(".single-design span.jury-total-marks");
-        if (juryMark.text().length > 0) {
-          $(".jury-average, .jury-marking, .single-jury-submit").hide();
-        } else {
-          $(".jury-average, .jury-marking, .single-jury-submit").show();
-        }
+      if (juryMark.text().length > 0) {
+        $(".jury-average, .jury-marking, .single-jury-submit").hide();
+      } else {
+        $(".jury-average, .jury-marking, .single-jury-submit").show();
+      }
     }
     juryMarks();
 
@@ -413,7 +414,7 @@
 
       // Get data from the HTML elements
       var juryUserId = $(".segment").data("juryuserid");
-      var dataId = $(".segment").data("id");
+      var dataId = $(".entry-id").text();
       var averageMarks = $(".jury-average-marks").text();
 
       // Prepare the data to send via AJAX

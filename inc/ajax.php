@@ -47,7 +47,6 @@ function handle_submit_form()
     global $wpdb;
 
     $table_name = $wpdb->prefix . 'review';
-    global $wpdb;
     if (isset($data) && is_array($data) && !empty($data)) {
         $row = $data;
         $columns = implode(", ", array_keys($row));
@@ -55,6 +54,8 @@ function handle_submit_form()
 
         $query = $wpdb->prepare("INSERT INTO $table_name($columns) VALUES ($placeholders)", array_values($row));
         $wpdb->query($query);
+
+        send_email_to_user($data);
     }
 
     wp_send_json_success([
@@ -67,6 +68,53 @@ function handle_submit_form()
 
 add_action('wp_ajax_handle_submit_form', 'handle_submit_form');
 add_action('wp_ajax_nopriv_handle_submit_form', 'handle_submit_form');
+
+
+function send_email_to_user($data){
+    
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'review';
+
+    if (isset($data) && is_array($data) && !empty($data)) {
+        // Insert the data into the database
+        $inserted = $wpdb->insert($table_name, $data);
+
+        // Check if the insert was successful
+        if ($inserted) {
+            // Get the ID of the newly inserted record
+            $last_id = $wpdb->insert_id;
+
+            // Get the user's email from the $_POST data
+            $user_email = $_POST['email'];
+
+            // Set the subject of the email
+            $subject = 'Thank you for your submission! We will review your design';
+
+            // Set the message body of the email
+            $message = "Hello " . $data['name'] . ",\n\n";
+            $message .= "Thank you for your submission. Your Review ID is <strong>" . $last_id . "</strong>.\n";
+            $message .= "We will get back to you shortly.\n\n";
+            $message .= "Best regards,\n";
+            $message .= "IGI Expressions";
+
+            // Use WordPress's built-in function to send the email
+            wp_mail($user_email, $subject, $message);
+
+            // Return a success message with the ID
+            wp_send_json_success([
+                'message' => 'Thank you for your submission! Your review ID is ' . $last_id,
+                'data' => $_POST,
+                'uploaded_file_url' => isset($uploaded_file_url) ? $uploaded_file_url : ''
+            ]);
+        } else {
+            // Handle the error in case the database insert fails
+            wp_send_json_error(['error' => 'There was a problem with your submission.']);
+        }
+    } else {
+        // Handle the case where data is not set or is not valid
+        wp_send_json_error(['error' => 'Invalid data submitted.']);
+    }
+}
 
 
 function document_upload_dir($default_dir_data)

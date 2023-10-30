@@ -42,7 +42,7 @@ if ($query) {
                     if ($value['title']) {
                         printf('<h4 class="entry-content d-inline-block mb-4">%s</h4>', esc_html($value['title']));
                     }
-                    printf('<h6>Items <span class="review-key">%s</span>/<span>%s</span></h6>', $key_value, $total);
+                    printf('<h6>Items <span class="review-jury-key">%s</span>/<span>%s</span></h6>', $key_value, $total);
                     ?>
                     <div class="d-flex flex-row m-2">
                         <button class="prev-jury btn btn-secondary" data-category="<?php echo $category_name; ?>" data-key=<?php echo $key_value; ?> data-count="0">Prev</button>

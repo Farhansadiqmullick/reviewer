@@ -93,7 +93,7 @@ if ($value) :
                         </div>
                     <?php endif; ?>
                     <div class="d-flex flex-column w-100 my-3">
-                        <span>Issue</span>
+                        <span>Review</span>
                         <textarea name="issue" id="issue" columns="100" rows="5"></textarea>
                     </div>
                     <input type="submit" name="single-dashboard-submit" class="single-dashboard-submit btn btn-primary text-white fw-bold px-5 py-2" value="Submit" />
