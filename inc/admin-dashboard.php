@@ -67,11 +67,6 @@ $user_role = ucwords($this->current_user->roles[0]);
 
                 <!-- Topbar Navbar -->
                 <ul class="navbar-nav ml-auto">
-
-                    <li class="nav-item">
-                        <a class="nav-link small active" aria-current="page" href="<?php echo admin_url('admin.php?page=review'); ?>">Expressions List</a>
-                    </li>
-
                     <!-- Nav Item - User Information -->
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -148,7 +143,7 @@ $user_role = ucwords($this->current_user->roles[0]);
                                             <?php foreach ($row as $key => $cell) :
                                                 if ($key == 'id') :
                                             ?>
-                                                    <td><a target="_blank" href="<?php echo admin_url('admin.php?page=single-design&category_template=' . urlencode($row['category']) . '&id=' . $cell); ?>"><?php echo esc_html($cell); ?></td>
+                                                    <td><a target="_blank" href="<?php echo admin_url('admin.php?page=single-design&category_template=' . urlencode($row['category']) . '&id=' . $cell); ?>"><?php echo esc_html(counting_start(intval($cell))); ?></td>
                                                 <?php else : ?>
                                                     <td><?php echo esc_html($cell); ?></td>
                                                 <?php endif; ?>

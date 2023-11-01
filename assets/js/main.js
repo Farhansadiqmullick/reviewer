@@ -34,6 +34,28 @@
       viewerHeight: 300,
     });
 
+    //submit for reviewer
+    $(".single-dashboard-submit").css({
+      "pointer-events": "none",
+      opacity: "0.4",
+    });
+    // Listen for any change on the radio inputs
+    $("input[type=radio][name=status]").change(function () {
+      if ($("#passRadio").is(":checked") || $("#failRadio").is(":checked")) {
+        // If either 'Pass' or 'Fail' is checked, enable the submit button
+        $(".single-dashboard-submit").css({
+          "pointer-events": "",
+          opacity: "1",
+        });
+      } else {
+        // If neither is checked, disable the submit button
+        $(".single-dashboard-submit").css({
+          "pointer-events": "none",
+          opacity: "0.4",
+        });
+      }
+    });
+
     //Load content
     var currentKey = $(".single-design").find("button.prev").data("key") - 1; // Initialize the current key starting from 0
     var currentJuryKey =
@@ -295,23 +317,8 @@
         totalCategory += parseInt($(this).text(), 10);
       });
 
-      // Send AJAX request
-      $.ajax({
-        url: totalcategory.ajaxurl,
-        method: "POST",
-        data: {
-          action: "total_review_value",
-          total: totalCategory,
-          category: categories.slice(1),
-          nonce: totalcategory.nonce,
-        },
-        success: function (response) {
-          console.log(response);
-        },
-        error: function (xhr, status, error) {
-          console.log("Error:", error);
-        },
-      });
+      const trimmedClassName = categories.replace('.', '');
+      $(".total-" + trimmedClassName).text(totalCategory);
     }
 
     totalValueCount(".categories-count");

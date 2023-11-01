@@ -349,3 +349,8 @@ function get_jury_name()
     }
     return $name;
 }
+
+function counting_start($number){
+    $value = 2024011000000 + $number;
+    return $value;
+}

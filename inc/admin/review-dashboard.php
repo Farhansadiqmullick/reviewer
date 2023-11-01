@@ -7,16 +7,10 @@
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-lg font-weight-bold text-uppercase mb-1">Total</div>
-
                                     </div>
-                                    <?php
-                                    $categories_total_count = get_option('categories-count');
-                                    if ($categories_total_count) {
-                                        echo '<div class="col-auto">';
-                                        printf('<h3 class="text-primary">%s</h3>', esc_attr($categories_total_count));
-                                        echo '</div>';
-                                    }
-                                    ?>
+                                  <div class="col-auto">
+                                        <h3 class="text-primary total-categories-count"></h3>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -30,14 +24,9 @@
                                     <div class="col mr-2">
                                         <div class="text-lg font-weight-bold text-uppercase mb-1">Pass</div>
                                     </div>
-                                    <?php
-                                    $pass_count = get_option('pass-count');
-                                    if ($pass_count) {
-                                        echo '<div class="col-auto">';
-                                        printf('<h3 class="text-success">%s</h3>', esc_attr($pass_count));
-                                        echo '</div>';
-                                    }
-                                    ?>
+                                    <div class="col-auto">
+                                        <h3 class="text-success total-pass-count"></h3>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -50,15 +39,9 @@
                                     <div class="col mr-2">
                                         <div class="text-lg font-weight-bold text-uppercase mb-1">Pending</div>
                                     </div>
-
-                                    <?php
-                                    $pending_count = get_option('pending-count');
-                                    if ($pending_count) {
-                                        echo '<div class="col-auto">';
-                                        printf('<h3 class="text-warning">%s</h3>', esc_attr($pending_count));
-                                        echo '</div>';
-                                    }
-                                    ?>
+                                    <div class="col-auto">
+                                        <h3 class="text-warning total-pending-count"></h3>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -70,14 +53,9 @@
                                     <div class="col mr-2">
                                         <div class="text-lg font-weight-bold text-uppercase mb-1">Fail</div>
                                     </div>
-                                    <?php
-                                    $fail_count = get_option('fail-count');
-                                    if ($fail_count) {
-                                        echo '<div class="col-auto">';
-                                        printf('<h3 class="text-danger">%s</h3>', esc_attr($fail_count));
-                                        echo '</div>';
-                                    }
-                                    ?>
+                                    <div class="col-auto">
+                                        <h3 class="text-danger total-fail-count"></h3>
+                                    </div>
                                 </div>
                             </div>
                         </div>
