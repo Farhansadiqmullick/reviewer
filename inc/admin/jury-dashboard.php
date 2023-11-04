@@ -85,7 +85,6 @@
                         if (in_array('jury', $current_user->roles)) {
                             $name = get_jury_name();
                             $convertible_jewelry_content = get_jury_review_content('perfume-bottle-or-jewelry-box-' . $name . '-value-option');
-                            var_dump($convertible_jewelry_content);
                             echo wp_kses($convertible_jewelry_content['submit'], 'post');
                             echo wp_kses($convertible_jewelry_content['pending'], 'post');
                         }
@@ -94,3 +93,7 @@
                 </div>
 
                 <!--dashboard-end-->
+
+                <div class="process-video my-3 text-center">
+                    <div class="btn btn-primary">Process Video</div>
+                </div>

@@ -130,7 +130,7 @@ function update_jury_tasks_status()
 
         $current_user = wp_get_current_user();
         if (in_array('jury', $current_user->roles)) {
-            $user_id = $current_user->ID; // Get the current user's ID
+            $user_id = get_current_user_id();
             $roles = get_option('jury_assign_roles', array());
             if (in_array($user_id, $roles)) {
                 $name = array_search($user_id, $roles);
@@ -350,7 +350,8 @@ function get_jury_name()
     return $name;
 }
 
-function counting_start($number){
+function counting_start($number)
+{
     $value = 2024011000000 + $number;
     return $value;
 }

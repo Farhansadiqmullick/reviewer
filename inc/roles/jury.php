@@ -63,14 +63,14 @@ if ($query) {
                     <div class="d-flex flex-column align-items-start bg-white shadow p-3 mb-5 rounded h-auto" style="min-width: 650px; width: auto;">
                         <h5 style="color:#BE768A">Submission Details</h5>
                         <div class="d-flex flex-column flex-md-row w-100 align-items-start">
-                            <div class="w-25">
-                                <?php
-                                if ($value['id']) {
-                                    echo '<span>ID</span>';
-                                    printf('<p class="entry-id">%s</p>', absint($value['id']));
-                                }
-                                ?>
-                            </div>
+                            <?php
+                            if ($value['id']) {
+                                echo '<div class="w-25">';
+                                echo '<span>ID</span>';
+                                printf('<p class="entry-id">%s</p>', absint($value['id']));
+                                echo '</div>';
+                            }
+                            ?>
                             <div class="w-25">
                                 <?php
                                 if ($value['segment']) {
@@ -124,7 +124,6 @@ if ($query) {
                         </div>
                         <input type="submit" name="single-jury-submit" class="single-jury-submit btn btn-primary text-white fw-bold px-5 py-2" value="Submit" />
                     </div>
-
                 </div>
             </div>
         </div>

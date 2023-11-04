@@ -1,7 +1,12 @@
 (function ($) {
   $(document).ready(function () {
+    var isSubmitting = false; // Add this flag
     $("#submitPopup").on("submit", function (event) {
       event.preventDefault();
+      if (isSubmitting) {
+        return;
+      }
+      isSubmitting = true;
       var formData = new FormData(this);
       formData.append("action", "handle_submit_form");
       formData.append("nonce", formurl.nonce);
@@ -23,8 +28,10 @@
             "There has been an error on form submission. Please reload and try again"
           );
         },
+        complete: function () {
+          isSubmitting = false;
+        },
       });
-      wp_die();
     });
 
     $(".zoom-box img").jqZoom({
@@ -277,16 +284,16 @@
       e.preventDefault();
 
       // Get the review ID, status, and category from the user
-      var review_id = $(".segment").data("id");
+      var review_id = $(".entry-id").text();
       var status = $('[name="status"]:checked').val();
       var category = $(".review-category").text();
       var issue = $('[name="issue"]').val();
 
       // If the user has checked the "Fail" radio button, join the issue value with a new line
-      if (status === "Fail") {
-        issue = "Fail\n" + issue;
+      if (status === "fail") {
+        issue = "fail\n" + issue;
       } else {
-        issue = "Pass";
+        issue = "pass";
       }
 
       // Send an Ajax request to update the review status
@@ -301,9 +308,16 @@
           nonce: reviewstatus.nonce,
         },
         success: function (response) {
+          console.log(response);
           if (response.success) {
             alert("Review has been submitted successfully");
           }
+        },
+        error: function (xhr, status, error) {
+          // Handle errors
+          console.error(xhr);
+          console.error(status);
+          console.error(error);
         },
       });
     });
@@ -317,7 +331,7 @@
         totalCategory += parseInt($(this).text(), 10);
       });
 
-      const trimmedClassName = categories.replace('.', '');
+      const trimmedClassName = categories.replace(".", "");
       $(".total-" + trimmedClassName).text(totalCategory);
     }
 

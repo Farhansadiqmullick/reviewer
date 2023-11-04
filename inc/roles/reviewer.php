@@ -28,7 +28,7 @@ if ($value) :
                 if ($value['title']) {
                     printf('<h4 class="entry-content d-inline-block mb-4">%s</h4>', esc_html($value['title']));
                 }
-                $key_value =  get_option('key_value');
+                // $key_value =  get_option('key_value');
                 printf('<h6>Items <span class="review-key">%s</span>/<span>%s</span></h6>', $key_value, $total);
                 ?>
                 <div class="d-flex flex-row m-2">
@@ -50,11 +50,20 @@ if ($value) :
                 <div class="d-flex flex-column align-items-start bg-white shadow p-3 mb-5 rounded h-auto" style="min-width: 650px; width: auto;">
                     <h5 style="color:#BE768A">Submission Details</h5>
                     <div class="d-flex flex-column flex-md-row w-100 align-items-start">
-                        <div class="w-50">
+                        <?php
+                        if ($value['id']) {
+                            echo '<div class="w-25">';
+                            echo '<span>ID</span>';
+                            printf('<p class="entry-id">%s</p>', absint($value['id']));
+                            echo '</div>';
+                        }
+                        ?>
+
+                        <div class="w-25">
                             <?php
                             if ($value['segment']) {
                                 echo '<span>Segement</span>';
-                                printf('<p class="segment" data-id=%s>%s</p>', absint($value['id']), esc_html($value['segment']));
+                                printf('<p class="segment">%s</p>', esc_html($value['segment']));
                             }
                             ?>
 
