@@ -147,7 +147,7 @@ function send_email_to_user($data)
 
         // Set the message body of the email
         $message = "Hello " . $data['name'] . ",\n\n";
-        $message .= "Thank you for your submission. Your Review ID is" . counting_start($last_id) . ".\n";
+        $message .= "Thank you for your submission. Your Review ID is " . counting_start($last_id) . ".\n";
         $message .= "We will get back to you shortly.\n\n";
         $message .= "Best regards,\n";
         $message .= "IGI Expressions";

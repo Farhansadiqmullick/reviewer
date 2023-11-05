@@ -40,6 +40,7 @@ if ($results) {
 }
 
 $user_role = ucwords($this->current_user->roles[0]);
+$categories_name = array_values(array_unique($categories));
 
 ?>
 <div id="wrapper">

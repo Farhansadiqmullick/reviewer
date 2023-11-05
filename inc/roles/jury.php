@@ -101,10 +101,20 @@ if ($query) {
                         if ((isset($value[$name]))) {
                             printf('<h6>Marks Submitted: <span class="jury-total-marks" data-name=%s data-juryvalue=%s>%s</span></h6>', array_search($value[$name], $value), esc_attr($value[$name]), esc_attr($value[$name]));
                         }
-
+                        $marks = [];
+                        for ($i = 1; $i <= 10; $i++) {
+                            $marks[] = $i;
+                        }
                         ?>
 
                         <div class="jury-marking d-flex flex-row flex-wrap m-2">
+                            <div class="d-flex flex-row">
+                                <?php
+                                foreach ($marks as $mark) {
+                                    printf('<i style="font-weight: 400; color: #333; padding: 5px 11px;">%d</i>', $mark);
+                                } ?>
+                                <br />
+                            </div>
                             <div class="d-flex flex-column">
                                 <label for="relevant-design">Relevant design</label>
                                 <?php echo marks_icon(10, 'relevant-design'); ?>

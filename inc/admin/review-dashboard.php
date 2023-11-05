@@ -8,7 +8,7 @@
                                     <div class="col mr-2">
                                         <div class="text-lg font-weight-bold text-uppercase mb-1">Total</div>
                                     </div>
-                                  <div class="col-auto">
+                                    <div class="col-auto">
                                         <h3 class="text-primary total-categories-count"></h3>
                                     </div>
                                 </div>
@@ -64,9 +64,10 @@
                 <div class="row dashboard-boxes-row">
                     <!-- Get the Category Details -->
                     <?php
+                    $convertible_jewelry_content = '';
                     if ("" != categories_cell($categories, 0)) {
                         echo categories_cell($categories, 0);
-                        $convertible_jewelry_content = get_review_content('convertible-jewelry_option');
+                        $convertible_jewelry_content = get_review_content(str_replace(['_', ' '], '-', strtolower($categories_name[0])) . '_option');
                         echo wp_kses($convertible_jewelry_content['pass'], 'post');
                         echo wp_kses($convertible_jewelry_content['pending'], 'post');
                         echo wp_kses($convertible_jewelry_content['fail'], 'post');
@@ -77,7 +78,7 @@
                     <?php
                     if ("" != categories_cell($categories, 1)) {
                         echo categories_cell($categories, 1);
-                        $convertible_jewelry_content = get_review_content('statement-piece_option');
+                        $convertible_jewelry_content = get_review_content(str_replace(['_', ' '], '-', strtolower($categories_name[1])) . '_option');
                         echo wp_kses($convertible_jewelry_content['pass'], 'post');
                         echo wp_kses($convertible_jewelry_content['pending'], 'post');
                         echo wp_kses($convertible_jewelry_content['fail'], 'post');
@@ -135,7 +136,7 @@
                     <?php
                     if ("" != categories_cell($categories, 2)) {
                         echo categories_cell($categories, 2);
-                        $convertible_jewelry_content = get_review_content('perfume-bottle-or-jewelry-box_option');
+                        $convertible_jewelry_content = get_review_content(str_replace(['_', ' '], '-', strtolower($categories_name[2])) . '_option');
                         echo wp_kses($convertible_jewelry_content['pass'], 'post');
                         echo wp_kses($convertible_jewelry_content['pending'], 'post');
                         echo wp_kses($convertible_jewelry_content['fail'], 'post');

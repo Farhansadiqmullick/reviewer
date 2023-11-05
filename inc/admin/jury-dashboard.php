@@ -55,7 +55,7 @@
                         echo categories_cell($categories, 0);
                         if (in_array('jury', $current_user->roles)) {
                             $name = get_jury_name();
-                            $convertible_jewelry_content = get_jury_review_content('convertible-jewelry-' . $name . '-value-option');
+                            $convertible_jewelry_content = get_jury_review_content(str_replace(['_', ' '], '-', strtolower($categories_name[0])) . '-' . $name . '-value-option');
                             echo wp_kses($convertible_jewelry_content['submit'], 'post');
                             echo wp_kses($convertible_jewelry_content['pending'], 'post');
                         }
@@ -68,7 +68,7 @@
                         echo categories_cell($categories, 1);
                         if (in_array('jury', $current_user->roles)) {
                             $name = get_jury_name();
-                            $convertible_jewelry_content = get_jury_review_content('statement-piece-' . $name . '-value-option');
+                            $convertible_jewelry_content = get_jury_review_content(str_replace(['_', ' '], '-', strtolower($categories_name[1])) . '-' . $name . '-value-option');
                             echo wp_kses($convertible_jewelry_content['submit'], 'post');
                             echo wp_kses($convertible_jewelry_content['pending'], 'post');
                         }
@@ -84,7 +84,7 @@
                         echo categories_cell($categories, 2);
                         if (in_array('jury', $current_user->roles)) {
                             $name = get_jury_name();
-                            $convertible_jewelry_content = get_jury_review_content('perfume-bottle-or-jewelry-box-' . $name . '-value-option');
+                            $convertible_jewelry_content = get_jury_review_content(str_replace(['_', ' '], '-', strtolower($categories_name[2])) . '-' . $name . '-value-option');
                             echo wp_kses($convertible_jewelry_content['submit'], 'post');
                             echo wp_kses($convertible_jewelry_content['pending'], 'post');
                         }

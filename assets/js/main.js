@@ -247,19 +247,21 @@
     issueLinkOpen();
     function issueLinkOpen() {
       // Get references to the buttons and the textarea
-      const failButton = document.querySelector(".fail");
+      const failRadio = document.getElementById("failRadio");
+      const passRadio = document.getElementById("passRadio");
       const issueTextarea = document.getElementById("issue");
       if (issueTextarea) {
         issueTextarea.style.display = "none";
-        issueTextarea.style.opacity = 0.5;
-
-        failButton.addEventListener("click", function () {
-          // Toggle the visibility of the textarea
-          if (issueTextarea.style.display === "none") {
+        issueTextarea.style.opacity = 0;
+        failRadio.addEventListener("change", function () {
+          if (failRadio.checked) {
             issueTextarea.style.display = "block";
-          } else {
-            issueTextarea.style.display = "none";
+            issueTextarea.style.opacity = 1;
           }
+        });
+        passRadio.addEventListener("change", function () {
+          issueTextarea.style.display = "none";
+          issueTextarea.style.opacity = 0;
         });
       }
     }
@@ -421,6 +423,7 @@
     //jury marks on single page
     function juryMarks() {
       var juryMark = $(".single-design span.jury-total-marks");
+      // console.log(juryMark.text().length);
       if (juryMark.text().length > 0) {
         $(".jury-average, .jury-marking, .single-jury-submit").hide();
       } else {
