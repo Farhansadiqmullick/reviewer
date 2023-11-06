@@ -101,17 +101,14 @@ if ($query) {
                         if ((isset($value[$name]))) {
                             printf('<h6>Marks Submitted: <span class="jury-total-marks" data-name=%s data-juryvalue=%s>%s</span></h6>', array_search($value[$name], $value), esc_attr($value[$name]), esc_attr($value[$name]));
                         }
-                        $marks = [];
-                        for ($i = 1; $i <= 10; $i++) {
-                            $marks[] = $i;
-                        }
+                        $marks = [1, 10];
                         ?>
 
                         <div class="jury-marking d-flex flex-row flex-wrap m-2">
-                            <div class="d-flex flex-row">
+                            <div class="d-flex flex-row justify-content-between" style="min-width:580px">
                                 <?php
                                 foreach ($marks as $mark) {
-                                    printf('<i style="font-weight: 400; color: #333; padding: 5px 11px;">%d</i>', $mark);
+                                    printf('<i class="mark-value">%d</i>', $mark);
                                 } ?>
                                 <br />
                             </div>
