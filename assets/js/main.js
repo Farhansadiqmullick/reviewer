@@ -344,7 +344,10 @@
 
     function setupMarksCounter(iconClassName, spanClassName) {
       $(document).on("mouseover", iconClassName, function () {
-        // Change icons to pink in an ascending way on hover
+        $(this)
+          .removeClass("icon-rectangle-pink")
+          .nextAll(iconClassName)
+          .removeClass("icon-rectangle-pink");
         $(this)
           .addClass("icon-rectangle-pink")
           .prevAll(iconClassName)
@@ -353,10 +356,15 @@
 
       $(document).on("mouseout", iconClassName, function () {
         // Change icons to pink in an ascending way on hover
-        $(this)
-          .removeClass("icon-rectangle-pink")
-          .prevAll(".icon-rectangle-pink")
-          .addClass("icon-rectangle");
+        var icons = $(this).find(iconClassName);
+
+        // Loop through each icon in reverse order
+        for (var i = icons.length - 1; i >= 0; i--) {
+          var $icon = $(icons[i]);
+
+          // Add the class ".icon-rectangle-pink" to each icon
+          $icon.addClass("icon-rectangle-pink");
+        }
       });
 
       $(document).on("click", iconClassName, function () {
